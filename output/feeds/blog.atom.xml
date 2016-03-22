@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>blog.ehouse.io</title><link href="https://blog-test.ehouse.io/" rel="alternate"></link><link href="https://blog-test.ehouse.io/feeds/blog.atom.xml" rel="self"></link><id>https://blog-test.ehouse.io/</id><updated>2016-03-11T00:00:00-05:00</updated><entry><title>Easy Server Naming Scheme</title><link href="https://blog-test.ehouse.io/easy-server-naming-scheme.html" rel="alternate"></link><updated>2016-03-11T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2016-03-11:easy-server-naming-scheme.html</id><summary type="html">&lt;p&gt;Coming up with names for servers or VM's can be pretty difficult. Often times
+names become obsolete or don't describe the server in a way that's meaningful.
+The best system is one where every machine has a unique name as it's A record
+and all of the service specific names become CNames. This allows the server to
+host many services without causing naming confusion or obsolete hostnames if a
+primary service is changed.&lt;/p&gt;
+&lt;p&gt;The article written by
+&lt;a href="http://mnx.io/blog/a-proper-server-naming-scheme/"&gt;mnx.io&lt;/a&gt; describes in great
+detail how to pull this off. I've found it works best in smallish environments
+of less then 100 servers. I've helped implement this scheme in two places and it
+worked out great both times. I would heavily recommend it whenever possible.&lt;/p&gt;
+&lt;h3&gt;Unique Names&lt;/h3&gt;
+&lt;p&gt;I've set up a server endpoint that will retrieve a list of unique names from
+&lt;a href="https://web.archive.org/web/20090918202746/http://tothink.com/mnemonic/wordlist.html"&gt;here&lt;/a&gt;.
+The pool of words comes from Oren Tirosh's mnemonic encoding project. The order
+of the names will be random so it's up to you to verify the names aren't already
+in use for your environment. You can can randomly generate list of hostnames at
+&lt;a href="https://hosts.ehouse.io"&gt;hosts.ehouse.io&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Vim for Blog Writing</title><link href="https://blog-test.ehouse.io/vim-for-blog-writing.html" rel="alternate"></link><updated>2015-11-19T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-11-19:vim-for-blog-writing.html</id><summary type="html">&lt;p&gt;For a while I was using IDE's like Atom or Sublime to write my blog posts but I
+found it annoying to switch between the terminal and the IDE constantly. The
+two things I needed were working syntax highlighting and spell checking so a full
+IDE was overkill. &lt;/p&gt;
+&lt;h3&gt;Markdown Syntax Highlighting&lt;/h3&gt;
+&lt;p&gt;I was having issues having Vim understand the syntax of my .md files so I had
+to add a special rule to treat them as such. It treats all files ending in .md
+as markdown but that works for me. Add the line to your .vimrc and you're set. &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;au BufNewFile,BufFilePre,BufRead *.md set filetype=markdown
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Spell Check&lt;/h3&gt;
+&lt;p&gt;First add this &lt;code&gt;set spelllang=en_us&lt;/code&gt; to your .vimrc file. This sets the
+language the spell checker will use. When you want to start the spell checker
+type &lt;code&gt;:set spell&lt;/code&gt; and to disabled it &lt;code&gt;:set nospell&lt;/code&gt;. Pretty easy to remember.&lt;/p&gt;
+&lt;p&gt;Assuming there are actually misspellings in your article words will get
+highlighted red. The &lt;code&gt;[s&lt;/code&gt; and &lt;code&gt;]s&lt;/code&gt; commands are used to jump backwards and
+forwards to the next misspelled words. Use &lt;code&gt;z=&lt;/code&gt; to correct the word under the
+cursor and use &lt;code&gt;zg&lt;/code&gt; to add the word to the local dictionary. &lt;/p&gt;</summary></entry><entry><title>mu4e as a email client</title><link href="https://blog-test.ehouse.io/mu4e-as-a-email-client.html" rel="alternate"></link><updated>2015-07-03T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-07-03:mu4e-as-a-email-client.html</id><summary type="html">&lt;p&gt;A coworker told me about this awesome life changing mail client called mu4e so of course I had to try it. Mu is an incredibly powerful mail indexer built on top of xapian. It can index and search through 20,000+ emails in fractions of a second. Its searching language is easy to use and incredibly powerful. From the distance I loved everything that mu4e was and could do.&lt;/p&gt;
+&lt;p&gt;I ended up sticking with thunderbird for my personal email however. My issue with it is that it was too life changing. Too much lift for just an improved email experience. My biggest issue was its lack of imap support. Why, might you ask, does a mail client not support imap. The answer is they chose not to. Instead they read from a Maildir which you need to create yourself with offlineimap or a similar tool. Polling is not a supported feature so you need a cronjob to run every few minutes. Not great if you are having a minute by minute discussion or aren't checking your email every few minutes. Not to mention the need to sync not just the headers but the full email body because you can't lazily download them as you read emails. The results of this is that it can take HOURS for the initial sync to finish.&lt;/p&gt;
+&lt;p&gt;My second gripe is that it is of course entirely emacs based. I'm too ingrained with modal text editing to change for just my email client. Most machines I work on don't even come with emacs installed and changing that might get me a stern talking to. There is a way to tie it into mutt but it doesn't look to be nearly as mature as mu4e. &lt;/p&gt;
+&lt;p&gt;My final thoughts are that mu4e is amazing if you are willing to learn emacs. It's well worth it for the power you get back. I didn't realize how awful email search was until I got familiar with mu. Too intrusive for me however.&lt;/p&gt;
+&lt;h3&gt;My mu4e config&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="ss"&gt;&amp;#39;mu4e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;require&lt;/span&gt; &lt;span class="ss"&gt;&amp;#39;smtpmail&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;; System Settings&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;message-send-mail-function&lt;/span&gt; &lt;span class="ss"&gt;&amp;#39;smtpmail-send-it&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-get-mail-command&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;offlineimap&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-update-interval&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;*&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt; &lt;span class="mi"&gt;60&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;user-full-name&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Ethan House&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-compose-signature&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Ethan House&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mail-user-agent&lt;/span&gt; &lt;span class="o"&gt;`&lt;/span&gt;&lt;span class="nv"&gt;mu4e-user-agent&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;message-kill-buffer-on-exit&lt;/span&gt; &lt;span class="no"&gt;t&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;; Bawls Mail&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;smtpmail-starttls-credentials&lt;/span&gt;
+      &lt;span class="o"&gt;&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;((&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;mail.ehouse.io&amp;quot;&lt;/span&gt; &lt;span class="mi"&gt;587&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+      &lt;span class="nv"&gt;user-mail-address&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;ehouse@ehouse.io&amp;quot;&lt;/span&gt;
+      &lt;span class="nv"&gt;smtpmail-smtp-server&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;mail.ehouse.io&amp;quot;&lt;/span&gt;
+      &lt;span class="nv"&gt;smtpmail-local-domain&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;ehouse.io&amp;quot;&lt;/span&gt;
+      &lt;span class="nv"&gt;smtpmail-smtp-service&lt;/span&gt; &lt;span class="mi"&gt;587&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;; Bawls Mail&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-maildir&lt;/span&gt;     &lt;span class="s"&gt;&amp;quot;~/Maildir&amp;quot;&lt;/span&gt;         &lt;span class="c1"&gt;;; top-level Maildir&lt;/span&gt;
+    &lt;span class="nv"&gt;mu4e-sent-folder&lt;/span&gt;   &lt;span class="s"&gt;&amp;quot;/bawls/Sent&amp;quot;&lt;/span&gt;       &lt;span class="c1"&gt;;; folder for sent messages&lt;/span&gt;
+    &lt;span class="nv"&gt;mu4e-drafts-folder&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;/bawls/Drafts&amp;quot;&lt;/span&gt;     &lt;span class="c1"&gt;;; unfinished messages&lt;/span&gt;
+    &lt;span class="nv"&gt;mu4e-trash-folder&lt;/span&gt;  &lt;span class="s"&gt;&amp;quot;/bawls/Trash&amp;quot;&lt;/span&gt;      &lt;span class="c1"&gt;;; trashed messages&lt;/span&gt;
+    &lt;span class="nv"&gt;mu4e-refile-folder&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;/bawls/Archive&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;   &lt;span class="c1"&gt;;; saved messages&lt;/span&gt;
+
+&lt;span class="c1"&gt;; Render html in w3m. Requires w3m be installed.&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-html2text-command&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;w3m -T text/html&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;; Default IMAP behavior&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-sent-message-behavior&lt;/span&gt; &lt;span class="ss"&gt;&amp;#39;delete&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+&lt;span class="c1"&gt;; Disable threading and don&amp;#39;t ask to quit.&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-headers-show-threads&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-confirm-quit&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Basic Sieve Usage and Configuration</title><link href="https://blog-test.ehouse.io/basic-sieve-usage-and-configuration.html" rel="alternate"></link><updated>2015-06-22T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-06-22:basic-sieve-usage-and-configuration.html</id><summary type="html">&lt;h3&gt;Setting up Sieve Access&lt;/h3&gt;
+&lt;p&gt;Sieve is a server side protocol for filtering mail. The benefit over sorting
+mail client side is that rules will be applied regardless of your MUA. Sieve
+scripts can be edited locally or remotely using the managesieve service. I am
+using the Pigeonhole implementation of sieve which is bundled with dovecot 2.x.
+I will be going over in a later article how to setup dovecot.&lt;/p&gt;
+&lt;h4&gt;Testing locally&lt;/h4&gt;
+&lt;p&gt;To test that everything is working correctly create a &lt;code&gt;.sieve/&lt;/code&gt; folder in your
+home directory and create your sieve scripts within it. Call it anything you'd
+like but it has to end in a &lt;code&gt;.sieve&lt;/code&gt; extension. I suggest you copy my basic
+config that I have listed below and make the appropriate changes.&lt;/p&gt;
+&lt;p&gt;When you are all done editing create a symlink in your home directory pointing
+to the file you just made and call it &lt;code&gt;.sieve.conf&lt;/code&gt;. This will be your active
+sieve script that Pigeonhole uses.&lt;/p&gt;
+&lt;p&gt;Send an email that would test your script. If there are any issues with the
+script you wrote it be logged to &lt;code&gt;~/.sieve.conf.log&lt;/code&gt;.&lt;/p&gt;
+&lt;h4&gt;Accessing remotely with Thunderbird&lt;/h4&gt;
+&lt;p&gt;As of writing this article the sieve plugin for Thunderbird available for
+download through the built in store does not work. It broke during an API change
+and a new version has not been submitted. Instead a nightly release has to be
+downloaded from the projects &lt;a href="https://github.com/thsmi/sieve"&gt;Github page&lt;/a&gt;. You
+can find the nightly version I used
+&lt;a href="https://github.com/thsmi/sieve/blob/master/nightly/0.2.3/sieve-0.2.3g.xpi"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Install the xpi file and you should be able to connect to your sieve server.
+Issues can be worked through with the builtin debugger.&lt;/p&gt;
+&lt;p&gt;When you get access either open your existing rule set or create a new one.
+Thunderbird will run though it and make sure there are no syntax errors. Make
+sure you activate the script which will create the symlink for you if you
+haven't already. The plugin also has some good resources of sieve script
+writing.&lt;/p&gt;
+&lt;h3&gt;Basic Sieve Usage&lt;/h3&gt;
+&lt;p&gt;The important notes about the config listed below are that the special commands
+like fileinto and addflag need to be included with require if they are used. The
+other thing to note is that the stop command is required unless you want
+multiple actions applies to a single envelope.&lt;/p&gt;
+&lt;h4&gt;Basic Sieve Config&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;require [&amp;quot;fileinto&amp;quot;, &amp;quot;imap4flags&amp;quot;];
+
+# This rule is for spamassassin headers. 
+if header :contains &amp;quot;X-Spam-Flag&amp;quot; &amp;quot;YES&amp;quot; {
+fileinto &amp;quot;Spam&amp;quot;;
+stop;
+}
+
+# Apply the Personal label to emails addressed to me. Continue executing the script. 
+if address :is [&amp;quot;to&amp;quot;,&amp;quot;cc&amp;quot;] &amp;quot;ehouse@ehouse.io&amp;quot;{
+addflag &amp;quot;label3&amp;quot;;   
+}
+
+# File openbsd misc mailing list into openbsd/misc folder.
+if address :is [&amp;quot;to&amp;quot;,&amp;quot;cc&amp;quot;] [&amp;quot;misc@openbsd.org&amp;quot;,&amp;quot;misc@cvs.openbsd.org&amp;quot;]{
+fileinto &amp;quot;openbsd.misc&amp;quot;;
+stop;
+}
+
+# File into folder oss-security.
+if address :is [&amp;quot;to&amp;quot;,&amp;quot;cc&amp;quot;] &amp;quot;oss-security@lists.openwall.com&amp;quot;{
+fileinto &amp;quot;oss-security&amp;quot;;
+stop;
+}
+
+# File system logs into logs folder.
+if address :is &amp;quot;from&amp;quot; &amp;quot;root@ehouse.io&amp;quot;{
+fileinto &amp;quot;logs&amp;quot;;
+stop;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Additional sieve resources&lt;/h3&gt;
+&lt;p&gt;You can check out &lt;a href="http://wiki2.dovecot.org/Pigeonhole/Sieve"&gt;here&lt;/a&gt; for a full
+list of options for sieve or
+&lt;a href="http://wiki2.dovecot.org/Pigeonhole/Sieve/Examples"&gt;here&lt;/a&gt; for some great sieve
+examples. It's a little weird at first but in no time you'll be writing new
+filters rules without looking at the docs.&lt;/p&gt;</summary></entry><entry><title>Temporary Mail Queue Server</title><link href="https://blog-test.ehouse.io/temporary-mail-queue-server.html" rel="alternate"></link><updated>2015-06-21T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-06-21:temporary-mail-queue-server.html</id><summary type="html">&lt;p&gt;I needed to stand up a temporary queue server to store mail while our primary
+file server was out of commission. This was the config I created to do just
+that. I went with OpenSMTPD because it was by far the easiest choice when
+standing up a new SMTP server. I had the whole thing running in less then an
+hour.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pki csh certificate &lt;span class="s2"&gt;&amp;quot;/etc/ssl/certs/csh_star.crt&amp;quot;&lt;/span&gt;
+pki csh key &lt;span class="s2"&gt;&amp;quot;/etc/ssl/private/csh_star.key&amp;quot;&lt;/span&gt;
+
+listen on localhost
+listen on egress port smtp tls pki csh
+
+table aliases file:/etc/mail/aliases
+
+bounce-warn 7d
+expire 30d
+
+accept from any &lt;span class="k"&gt;for&lt;/span&gt; domain &lt;span class="s2"&gt;&amp;quot;csh.rit.edu&amp;quot;&lt;/span&gt; &lt;span class="nb"&gt;alias&lt;/span&gt; &amp;lt;aliases&amp;gt; relay &lt;span class="s2"&gt;&amp;quot;mail.csh.rit.edu&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The server will hold the mail until it can be delivered. Users won't be able to
+send but at least mail won't be lost. The final step is to setup the second
+backup MX record for this mail host and turn everything on. Watch the mail queue
+to make sure mail is being relayed.&lt;/p&gt;
+&lt;p&gt;Due to the lack of physical access and being students it's hard to prevent
+issues like this. It's a bad solution to a worse problem but it solved our
+looming problem of losing mail.&lt;/p&gt;</summary></entry><entry><title>Wrath of the Lich Witch Part 1</title><link href="https://blog-test.ehouse.io/wrath-of-the-lich-witch-part-1.html" rel="alternate"></link><updated>2014-11-24T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-11-24:wrath-of-the-lich-witch-part-1.html</id><summary type="html">&lt;h3&gt;Side Quest&lt;/h3&gt;
+&lt;p&gt;Everyone was absent, so I decided to run a one-off I've been cooking in my head. It went better than expected.&lt;/p&gt;
+&lt;h4&gt;Players&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Frank : Arron the Ranger&lt;/li&gt;
+&lt;li&gt;Alex : Unnamed the Rouge (pronounced UnA-med)&lt;/li&gt;
+&lt;li&gt;Will : Kristof the Fighter&lt;/li&gt;
+&lt;li&gt;Rob (AFK) : Orana the Witch&lt;/li&gt;
+&lt;li&gt;Derek (AFK) : Belanthas the Cleric&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;The Adventure Begins...&lt;/h3&gt;
+&lt;h4&gt;At the Rusty Dragon&lt;/h4&gt;
+&lt;p&gt;The party relaxed after their long trip back from their previous adventure.
+Killing and pillaging is hard work after all. Aminko, the owner of the Rusty
+Dragon, walked over and handed a package to Belanthas, the party Cleric. "This
+showed up for you a while ago. No idea who it's from. Just left on my door step.
+Weird, they knew you'd be here." Just as confused as Aminko as to why he would
+have a package here, he ripped open the box to reveal an ornate and intricate
+flask. The bottle was made out of a clear glass and adorned with gold and gems.
+The flask ebbed and flowed with magical energy as the wispy content churned
+inside the bottle.&lt;/p&gt;
+&lt;p&gt;Orana, the wise old witch, was overcome with curiosity and tore the bottle from
+Belanthas's hands, popped the cork from the bottle and lifted it to her nose.
+The purple smoke rose out of the bottle and into Orana's lungs. Her eyes rolled
+back into her head and she hit the ground with a thump. The bottle, now empty of
+the gaseous fluid, rolled onto the floor and under a table. Kristof, knowing
+this was going to be trouble, grabbed the now passed out witch and dragged her
+upstairs. He tied Orana to the bed to ensure she wouldn't do any wandering. The
+party gathered their things and headed off to the chapel knowing Father Chuckles
+would have an idea. Belanthas decided he was going to sit this adventure out and
+nurse his wounds from the previous few days.&lt;/p&gt;
+&lt;h4&gt;Out and About in Sandpoint&lt;/h4&gt;
+&lt;p&gt;Upon their arrival, Father Chuckles was not happy to see this select group of
+men in his Chapel. The party held up the vial for the Father to see and asked
+what it was. The Father studied the bottle for a moment abd became livid.&lt;/p&gt;
+&lt;p&gt;"Leave at once!" yelled the Father. "Take that contraption away from my church!"&lt;/p&gt;
+&lt;p&gt;The party continued to throw questions at the Father as he began pushing them
+out the door.&lt;/p&gt;
+&lt;p&gt;"It's a Lich's phylactery and I will not be having you bunch causing any more
+trouble. Out! Out!"&lt;/p&gt;
+&lt;p&gt;The Father got quiet as the party headed towards the door, distraught and
+defeated.&lt;/p&gt;
+&lt;p&gt;"Wait! I'll help. What business do you have with the device and why did you
+bring it here?"&lt;/p&gt;
+&lt;p&gt;Arron stepped forward. "Our 'Friend' decided to use it as an inhalant. She's
+currently passed out and tied to a bed. We just want to make sure nothing is
+seriously wrong with Orana."&lt;/p&gt;
+&lt;p&gt;"Come, let me take a look," sighed the tired old monk.&lt;/p&gt;
+&lt;h4&gt;Back at the Rusty Dragon&lt;/h4&gt;
+&lt;p&gt;"Ok, guys. I've talked to you about this," Aminko said blocking the party from
+climbing the steps to their personal rooms. "I don't want live animals in the
+rooms. You've got to pen them up outside. They're up there making a racket and
+my usuals are complaining."&lt;/p&gt;
+&lt;p&gt;Kristof quickly blurted an apology and sprinted past Aminko with the rest of the
+party. Behind the door the party was greeted by their worst fears. The room had
+been trashed. The bed was broken in half and discarded by the door and the
+window was wide open. The party didn't see any signs of the monster they
+accidently helped create.&lt;/p&gt;
+&lt;p&gt;"Well then. You'd best be off to find her." quirked the Father.&lt;/p&gt;
+&lt;p&gt;"Would you assist us on this wild goose chase? I'm sure you are quite skilled at
+Lich tracking," Kristof asked. The old man shook his head.&lt;/p&gt;
+&lt;p&gt;"I'm no fighter. In my youth I would gladly have joined you. I will return to my
+study and read up on magic that may help. If you are able to trap it, find me
+and I will do what I can to save your friend."&lt;/p&gt;
+&lt;p&gt;He headed down the stairs and out of sight as fast as his frail legs could take
+him. The party, having no idea where to start, decided to check out the
+abandoned glass works as it would be a perfect place to hide for the Lich.&lt;/p&gt;
+&lt;h4&gt;With the Heroes of Sandpoint&lt;/h4&gt;
+&lt;p&gt;The party broke into the glassworks and headed down to the basement. They were
+immediately met with an impassible wall built by the Paladins who had chased
+them away not a few weeks prior. Frustrated and of ideas they began walking back
+to the Rusty Dragon. In the distance, over at the trading district, they heard
+screaming and saw clouds of smoke billowing into the sky. "Found her," sighed
+Kristof. Already assuming the wors,t they walked to the market district ready to
+play damage control. The crowd was dense with onlookers wondering what all the
+commotion was about. The party pushed themselves to the front of the crowd and
+found a smashed fine china cart and hysterical salesaen holding the fractured
+pieces.&lt;/p&gt;
+&lt;p&gt;"She came out of no where!" he cried. "I couldn't stop her. My entire life's
+work smashed to pieces before my eyes!"&lt;/p&gt;
+&lt;p&gt;"Did you see where she went, we're trying to find her?" asked Arron. The
+salesman was too hysterical to respond.&lt;/p&gt;
+&lt;p&gt;"Wait!" cried someone in the crowd, "it's the heroes of Sandpoint."&lt;/p&gt;
+&lt;p&gt;"It is them! You saved us from the goblins!" cried another. The crowd quickly
+lost interest in the flaming china cart and began circling the party chanting
+"Heroes of Sandpoint". The party was lifted into the air and paraded around.
+"Heroes of Sandpoint," everyone chanted in unison. The party desperately tried
+to get as much useful information out of the crowd as they could, despite the
+fact nothing could be heard over the cheering and chanting. After a few minutes
+they were put back on the ground and the chanting changed to "Kill the monster!"&lt;/p&gt;
+&lt;p&gt;Kristof lost his patience and yelled as loud as he could, "We will kill the
+monster, but we need to know where it is headed." Someone in the crowd pointed
+over the town's walls to the Tick Forest in the Hinterlands.&lt;/p&gt;
+&lt;p&gt;"It headed off in that direction, towards the old forest." The crowd began
+moving towards the front pushing the party as it went. The heroes mounted their
+horses and ponies and rode off into the hills anxious for the battle that was
+soon to come. The chanting could still be heard as the town disappeared from
+view.&lt;/p&gt;
+&lt;h3&gt;Within the Tickwood Forest&lt;/h3&gt;
+&lt;p&gt;The party rode through the hillside and into the sparse outer forest. The dense
+forest was fresh with new growth but was surprisingly quiet.&lt;/p&gt;
+&lt;p&gt;"This doesn't seem right, everyone hold up," Arron said stopping the party. He
+rode on further and scouted the area looking for goblins which were common in
+the area. Fifty or so feet directly ahead of the party they saw a cart and horse
+pulled off to the side of the road. Little green creatures scurried around it.
+They were throwing things in the air and trying to be as loud as possible. It
+seemed that the caravan was being robbed by goblins. There was a tallish figure
+being held at sword point towards the back of the cart. Arron quickly rode back
+and reported what he saw. A plan of attack was put together and the party began
+spreading out. Everyone slowly approach the goblins hoping to catch a straggler
+by surprise and surround it. Bows at the ready, the three men fired at the
+closest goblins hoping for quick kills. Arron threw a smoke bomb towards the
+cart. Arron, with his personal hatred of the little green monsters, ran towards
+the cart and quickly dispatched three goblins. A few minutes later most of the
+goblins had been dealt with and the rest were retreating into the forest.&lt;/p&gt;
+&lt;p&gt;The party approached the caravan and were met by an elvish woman who introduced
+herself as Thalijen. Off by the corner of the wagon the two goblins who had had
+her by sword point were notably dead and bloody. She jumped into the back of the
+wagon and attempted to wake up her robed friend. "He was knocked out when the
+goblins ambushed us," she said. "He woke up in a haze, mumbling something about
+witches and demons. Well once again I am Thalijen and this is my friend Thyme.
+We are adventurers out in search for a Lich that recently flew this way.
+Guessing by your dress you are also on a similar quest." The party nodded in
+unison. "Well then it would only make sense to team up and deal with this Lich
+together," she said rather enthusiastically considering her recent encounter
+with goblins.&lt;/p&gt;
+&lt;p&gt;And with that the newly formed party was off.&lt;/p&gt;
+&lt;p&gt;To be continued in &lt;a href="/wrath-of-the-lich-witch-part-2.html"&gt;Part 2&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Basic SMTP Email Server</title><link href="https://blog-test.ehouse.io/basic-smtp-email-server.html" rel="alternate"></link><updated>2014-11-05T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-11-05:basic-smtp-email-server.html</id><summary type="html">&lt;p&gt;Running your own mail server can seem intimidating at first but once the
+different layers are broken down it becomes much easier to tackle. There are
+three main parts of a mail stack, the mta, mda, and mua. The Mail Transfer Agent
+(MTA) is what handles the sending and receiving of emails. This is the smtp
+server. The Mail Delivery Agent (MDA) handles delivery of emails to users, this
+is usually over protocols like pop3 or imap. The final part is the Mail User
+Agent (MUA), this is the client that lets the user send and receive mail.
+Popular MUA's are Thunderbird and mutt.&lt;/p&gt;
+&lt;p&gt;Later on in the series I will go over more advanced features of the mail stack
+like amavisd which is used for virus scanning and spamassassin which is for spam
+prevention. I will also cover sieve, which is a cool client/server side
+filtering language dovecot supports.&lt;/p&gt;
+&lt;p&gt;I will be going over how to setup the SMTP server in part 1. I have chosen
+OpenSMTPD because it is feature filled and simple to setup. OpenSMTPD is OpenBSD
+project that is designed to replace sendmail but in most cases can be used as a
+replacement for postfix. Their primary goal of being simple and secure leads to
+a rock solid application. They did an amazing job and it's actually difficult to
+setup improperly.&lt;/p&gt;
+&lt;h3&gt;OpenSMTPD Setup&lt;/h3&gt;
+&lt;p&gt;Make sure OpenSMTPD is installed on your system. It is available as packages for
+most operating systems in the repositories. If it is not available you can build
+from source.&lt;/p&gt;
+&lt;p&gt;The main file we are going to be working with is smtpd.conf. On FreeBSD it is
+located at /usr/local/etc/mail/smtpd.conf. On CentOS it is
+/etc/opensmtpd/smtpd.conf. Create it if it doesn't exist and move to the next
+section.&lt;/p&gt;
+&lt;h4&gt;smtpd.conf&lt;/h4&gt;
+&lt;p&gt;This is the total smtpd config I have running at this point. I have broken down
+each section and will describe it as I go.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pki ehouse.io certificate &amp;quot;/etc/ssl/certs/mail.crt&amp;quot;
+pki ehouse.io key &amp;quot;/etc/ssl/private/mail.key&amp;quot;
+queue compression
+queue encryption key YourKeyHere
+
+listen on localhost
+listen on egress port smtp tls pki ehouse.io auth-optional
+listen on egress port submission tls-require pki ehouse.io auth
+
+table aliases db:/etc/mail/aliases.db
+
+accept from any for domain &amp;quot;ehouse.io&amp;quot; alias &amp;lt;aliases&amp;gt; deliver to maildir
+accept for any relay
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;SSL and Cert Signing&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pki mail.ehouse.io certificate &amp;quot;/etc/ssl/certs/mail.crt&amp;quot;
+pki mail.ehouse.io key &amp;quot;/etc/ssl/private/mail.key&amp;quot;
+queue compression
+queue encryption key YourKeyHere
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This section sets up the cert and the private key used for SSL/TLS. I also
+encrypt and compress the mail queue but both of these steps are optional.
+OpenSMTPD orders it so mail is compressed before it is encrypted.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;openssl req -new -x509 -days 3650 -nodes -out /etc/ssl/certs/mail.crt -keyout /etc/ssl/private/mail.key
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;There are two options here. You can either self sign your own cert or have one
+signed by a certificate authority. If you are just running a person mail server
+I suggest self signed because it's quick and free. Run the command above to
+generate the cert and the key used for the secure connection. We will be using
+these later when we setup dovecot as well. Make sure the destination folders
+actually exist otherwise it will error out. The line is rather long, so make
+sure you grab all of it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;openssl rand -hex 16
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Finally to generate the queue encryption key run the command above and paste it
+over the YourKeyHere text in the config. This step is optional but recommended.&lt;/p&gt;
+&lt;h4&gt;Listen for connections&lt;/h4&gt;
+&lt;p&gt;This sections is where things get hairy. It controls who and from where servers
+or users can make connections and the configuration is pretty dense.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;listen on localhost
+listen on egress port smtp tls pki ehouse.io auth-optional
+listen on egress port submission tls-require pki ehouse.io auth
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;All incoming traffic to either port 25(smtp) or 587(submission) are passed
+through. The smtp port is used for server to server and submission is used for
+client to server email delivery. Due to how the standards were written smtp has
+to start off cleartext and using startTLS move up to encrypted. Submission will
+immediately and securely connect and authenticate. The pki is the key that we
+designated earlier and called ehouse.io in this case.&lt;/p&gt;
+&lt;h4&gt;Sending and Receiving Mail&lt;/h4&gt;
+&lt;p&gt;And finally we are at the end of the config file. While these settings look a
+bit terrifying I assure you they are perfectly safe.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;table aliases db:/etc/mail/aliases.db
+
+accept from any for domain &amp;quot;ehouse.io&amp;quot; alias &amp;lt;aliases&amp;gt; deliver to maildir
+accept for any relay
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We are loading the alias file which, depending on the os, may be in a different
+location. If you want to update this file without restarting smtpd you can run
+&lt;code&gt;smtpctl update table aliases&lt;/code&gt;. It is also worth noting you can have OpenSMTPD
+use cleartext as well. I suggest sticking with binary because it can save on
+lookup time if the files get large enough. Make sure you run &lt;code&gt;newaliases&lt;/code&gt; and
+&lt;code&gt;makemap&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;The last two lines are pretty easy enough to follow. Accept mail from any source
+going to &lt;code&gt;ehouse.io&lt;/code&gt;. Authenticated system users are intrinsically allowed
+through unless otherwise stated. I also want to accept mail for aliases and
+virtual users that were setup earlier and deliver it to maildir. OpenSMTPD
+supports quite a few delivery methods and I will go more into them in a later
+article.&lt;/p&gt;
+&lt;p&gt;Which leaves us with the last line. This says to relay mail for any destination
+from local authed users. There is also an implicit line to accept only from
+local and relay it. This is what prevents it from being a open relay.&lt;/p&gt;
+&lt;p&gt;That's it for setting up a OpenSMTPD. Kinda scary how easy it was to setup.
+Start OpenSMTPD and you should be able to send and receive mail on your local
+account assuming you set a mx record. Creating MX records is easy enough so I
+won't be going over it.&lt;/p&gt;
+&lt;h4&gt;Next up&lt;/h4&gt;
+&lt;p&gt;In the next section I will be going over the MDA which will be dovecot which
+will allow you to use thunderbird. I will also cover amavisd and spamassassin to
+deal with the inevitable spam you'll receive.&lt;/p&gt;</summary></entry><entry><title>Automating Ports with Poudriere</title><link href="https://blog-test.ehouse.io/automating-ports-with-poudriere.html" rel="alternate"></link><updated>2014-09-24T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-09-24:automating-ports-with-poudriere.html</id><summary type="html">&lt;p&gt;While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
+custom build flags. While ports is pretty decent in itself it is a royal pain to automate. New to FreeBSD 10, poudriere
+allows ports to be built in the background with no human interaction post setup. Setup is quick and easy to maintain.&lt;/p&gt;
+&lt;h3&gt;Setup&lt;/h3&gt;
+&lt;p&gt;I recommend copying over the sample conf file and making changes as you see fit. Make sure to read it over as it will
+not work out of the box.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cp /usr/local/etc/poudriere.conf.sample /usr/local/etc/poudriere.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I have also included my config for reference. This should work assuming you have the files and folders in the proper
+places and create a SSL key for packaging signing. Check out the signing section below.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nv"&gt;ZPOOL&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;zroot
+
+&lt;span class="nv"&gt;FREEBSD_HOST&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ftp://ftp.freebsd.org
+&lt;span class="nv"&gt;RESOLV_CONF&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/etc/resolv.conf
+&lt;span class="nv"&gt;BASEFS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/usr/local/poudriere
+&lt;span class="nv"&gt;USE_PORTLINT&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;no
+&lt;span class="nv"&gt;USE_TMPFS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;yes
+&lt;span class="nv"&gt;DISTFILES_CACHE&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/usr/ports/distfiles
+&lt;span class="nv"&gt;CHECK_CHANGED_OPTIONS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;verbose
+&lt;span class="nv"&gt;CHECK_CHANGED_DEPS&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;yes
+
+&lt;span class="nv"&gt;PKG_REPO_SIGNING_KEY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/etc/ssl/private/pkg.key
+&lt;span class="nv"&gt;CCACHE_DIR&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/var/cache/ccache
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;First Run&lt;/h3&gt;
+&lt;p&gt;Run these commands to setup the poudriere environment. I included comments on what each line does. This will create the
+ports tree and setup the jail template.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Create copy of the ports tree&lt;/span&gt;
+poudriere ports -c
+&lt;span class="c1"&gt;# Create base jail&lt;/span&gt;
+poudriere jail -c -j 10x64 -v 10.0-RELEASE -a amd64
+&lt;span class="c1"&gt;# Create port list file for poudrier to build from&lt;/span&gt;
+portmaster --list-origins &lt;span class="p"&gt;|&lt;/span&gt; sort -d &amp;gt; /usr/local/etc/poudriere-list
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;You can have poudriere build packages with special options. These options will persist across builds.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;poudriere options -c www/firefox
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Package Signing&lt;/h3&gt;
+&lt;p&gt;Even if your repo is private, signing packages is a good thing to do. Assuming you keep your private key private you can
+be sure the packages were built on your system. Distribute the cert however you see fit but make sure anyone using your
+repo has access to it.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mkdir -p /usr/local/etc/ssl/keys /usr/local/etc/ssl/certs
+chmod &lt;span class="m"&gt;600&lt;/span&gt; /usr/local/etc/ssl/keys
+openssl genrsa -out /usr/local/etc/ssl/keys/pkg.key 4096
+openssl rsa -in /usr/local/etc/ssl/keys/pkg.key -pubout &amp;gt; /usr/local/etc/ssl/certs/pkg.cert
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Final Setup&lt;/h3&gt;
+&lt;p&gt;You're almost done. All you have left to do is actually host the content somewhere. Just point your trusty webserver at
+the package set and you're ready to go.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;server &lt;span class="o"&gt;{&lt;/span&gt;
+    listen       80&lt;span class="p"&gt;;&lt;/span&gt;
+    server_name  pkg.ehouse.io&lt;span class="p"&gt;;&lt;/span&gt;
+
+    location / &lt;span class="o"&gt;{&lt;/span&gt;
+        autoindex on&lt;span class="p"&gt;;&lt;/span&gt;
+        root /usr/local/poudriere/data/packages/10amd64-default/&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now you need to create the repo for FreeBSD to read from. Create the file /usr/local/etc/pkg/repos/poudriere.conf for
+pkg to read from. The contents of the repo file are below. Adjust the url to work for your system.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;poudriere: &lt;span class="o"&gt;{&lt;/span&gt;
+  url: &lt;span class="s2"&gt;&amp;quot;http://pkg.ehouse.io&amp;quot;&lt;/span&gt;,
+  mirror_type: &lt;span class="s2"&gt;&amp;quot;http&amp;quot;&lt;/span&gt;,
+  signature_type: &lt;span class="s2"&gt;&amp;quot;pubkey&amp;quot;&lt;/span&gt;,
+  pubkey: &lt;span class="s2"&gt;&amp;quot;/usr/local/etc/ssl/certs/pkg.cert&amp;quot;&lt;/span&gt;,
+  enabled: yes
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Time to automate. I wrote up a series of cronjobs to handle the processes of automating. Tweak to how you see fit.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;@weekly     /usr/local/bin/poudriere ports -u&lt;span class="p"&gt;;&lt;/span&gt; /usr/local/bin/poudriere bulk -f /usr/local/etc/poudriere-list -j 10x64
+&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;6&lt;/span&gt; * * *     /usr/sbin/pkg update
+&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="m"&gt;23&lt;/span&gt; * * *     /usr/local/sbin/portmaster --list-origins &lt;span class="p"&gt;|&lt;/span&gt; sort -d &amp;gt; /usr/local/etc/poudriere-list
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Web Frontend&lt;/h3&gt;
+&lt;p&gt;Poudriere includes a neat little web frontend to watch packages as they are built. Example
+&lt;a href="http://pkgstats.ehouse.io/"&gt;Here&lt;/a&gt;. I included the nginx config I wrote. Change the root to point at what ever you
+named the jail template.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;server &lt;span class="o"&gt;{&lt;/span&gt;
+    listen       80&lt;span class="p"&gt;;&lt;/span&gt;
+    server_name  pkgstats.ehouse.io&lt;span class="p"&gt;;&lt;/span&gt;
+
+    location / &lt;span class="o"&gt;{&lt;/span&gt;
+        root /usr/local/poudriere/data/logs/bulk/10x64-default/latest&lt;span class="p"&gt;;&lt;/span&gt;
+        index index.html&lt;span class="p"&gt;;&lt;/span&gt;
+        autoindex on&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;There you go. A fully functional automated ports building process. Probably took no more then 30 minutes.&lt;/p&gt;
+&lt;p&gt;I used &lt;a href="http://www.bsdnow.tv/tutorials/poudriere"&gt;BSDNow&lt;/a&gt; for reference when writing this. Check out their stuff, it's
+pretty great.&lt;/p&gt;</summary></entry><entry><title>Advanced PF Usage</title><link href="https://blog-test.ehouse.io/advanced-pf-usage.html" rel="alternate"></link><updated>2014-06-20T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-06-20:advanced-pf-usage.html</id><summary type="html">&lt;p&gt;Since my last PF post I've made some changes to my pf.conf file. I've broken the
+config into its own separate section and displayed them below with some
+explanation. All together the config is organized and easy to maintain, which is
+always good.&lt;/p&gt;
+&lt;h3&gt;Macros&lt;/h3&gt;
+&lt;p&gt;Macros can be thought of as variables. They can store either a single scalar value
+or an arrays of values separated by a comma and surrounded by curly braces. All
+scalars must be in quotes.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# TCP services to allow, either names from /etc/services or port numbers&lt;/span&gt;
+&lt;span class="nv"&gt;tcp_services&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;{http, https, ssh, 25565, 8123, 8080, 8000, 12345}&amp;quot;&lt;/span&gt;
+&lt;span class="c1"&gt;# UDP Services to allow, either names from /etc/services or port numbers&lt;/span&gt;
+&lt;span class="nv"&gt;udp_services&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;{domain, 60000:60010}&amp;quot;&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Macro of the primary interface&lt;/span&gt;
+&lt;span class="nv"&gt;ext_if&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;bce1&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;jail_if&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;lo1&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Pretty much the same as before, except now I have a section for mosh. I use PF's
+colon operator to give me a range of ports, 60000 through 60010.&lt;/p&gt;
+&lt;h3&gt;Tables&lt;/h3&gt;
+&lt;p&gt;Tables are similar to macro groups except they can be edited without restarting
+PF. Great for blacklists or whitelists. Tables can only store Ip addresses though,
+limiting there use.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;table &amp;lt;whitelist&amp;gt; &lt;span class="o"&gt;{&lt;/span&gt; 11.22.33.44, 123.45.67.89 &lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I've created a whitelist that will be quickly passed though, preventing other rules
+from being applied. Good for the accidental screw up. I don't have a blacklist
+table because I use denyhosts.  &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pfctl -t whitelist -T add 192.168.0.0/16
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Cidr notation is also accepted in tables.&lt;/p&gt;
+&lt;h3&gt;Traffic Normalization&lt;/h3&gt;
+&lt;p&gt;Scrub guarantees that all traffic passed into the filter section is not fragmented. Packets
+that are fragmented are put into a buffer to wait until the rest of the packet arrives.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Scrubs packets for possible issues. All Trafic is reassembled. Might cause&lt;/span&gt;
+&lt;span class="c1"&gt;# issues for games and NFS&lt;/span&gt;
+scrub in on &lt;span class="nv"&gt;$ext_if&lt;/span&gt; all fragment reassemble
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Be cautious with scrub rules. They can cause issues with games and NFS traffic.
+To log a rules effect add "log" after the in or out keyword as such.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;scrub in log on &lt;span class="nv"&gt;$ext_if&lt;/span&gt; all fragment reassemble
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Filtering&lt;/h3&gt;
+&lt;p&gt;Not much crazy has changed here. I've added two new rules to allow icmp trafic and to
+quick pass from the whitelist table. I've also added a rule which drops all
+trafic with a destination address of 255.255.255.255. It's commented it out though,
+most of the broadcast traffic I was getting was from UPnP. Not allowing
+UPnP(udp 1900, tcp 5000) is easier.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Block all traffic by default&lt;/span&gt;
+block all
+
+&lt;span class="c1"&gt;# Ignore local,internal traffic&lt;/span&gt;
+&lt;span class="nb"&gt;set&lt;/span&gt; skip on lo0
+
+&lt;span class="c1"&gt;# Quick antispoof check for primary interface&lt;/span&gt;
+antispoof log quick &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nv"&gt;$ext_if&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Quick drop on broadcast traffic&lt;/span&gt;
+&lt;span class="c1"&gt;#block in quick on $ext_if from any to 255.255.255.255&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Allow incoming and outgoing ICMP&lt;/span&gt;
+pass inet proto icmp from any to any
+
+&lt;span class="c1"&gt;# Allow in traffic from services macro&lt;/span&gt;
+pass in quick from &amp;lt;whitelist&amp;gt; flags S/SA synproxy state
+pass in on &lt;span class="nv"&gt;$ext_if&lt;/span&gt; proto tcp to any port &lt;span class="nv"&gt;$tcp_services&lt;/span&gt;
+pass in on &lt;span class="nv"&gt;$ext_if&lt;/span&gt; proto udp to any port &lt;span class="nv"&gt;$udp_services&lt;/span&gt;
+
+&lt;span class="c1"&gt;# Allow ALL outbound traffic&lt;/span&gt;
+pass out on &lt;span class="nv"&gt;$ext_if&lt;/span&gt; proto tcp from any to any keep state
+pass out on &lt;span class="nv"&gt;$ext_if&lt;/span&gt; proto udp from any to any keep state
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Other Usefull Commands.&lt;/h2&gt;
+&lt;p&gt;Lots of commands are available to do just about everything under the sun with pf.
+I've listed below some of the more useful commands I've found.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Realtime logging from pglog0 device&lt;/span&gt;
+tcpdump -n -e -ttt -i pflog0
+&lt;span class="c1"&gt;# realtime logging from pf log file&lt;/span&gt;
+tcpdump -n -e -ttt -r /var/log/pflog
+
+&lt;span class="c1"&gt;# parse ruleset for errors, does not load&lt;/span&gt;
+pfctl -vnf /etc/pf.conf
+&lt;span class="c1"&gt;# maintain state and reload config&lt;/span&gt;
+pfctl -f /etc/pf.conf
+&lt;span class="c1"&gt;# same thing as above, just easier to remember&lt;/span&gt;
+service pf reload
+
+&lt;span class="c1"&gt;# List loaded rules&lt;/span&gt;
+pfctl -sr
+&lt;span class="c1"&gt;# View state table&lt;/span&gt;
+pfctl -ss
+&lt;span class="c1"&gt;# List everything&lt;/span&gt;
+pfctl -sa
+&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>OpenBSD and LibreSSL</title><link href="https://blog-test.ehouse.io/openbsd-and-libressl.html" rel="alternate"></link><updated>2014-04-26T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-04-26:openbsd-and-libressl.html</id><summary type="html">&lt;p&gt;I've always been impressed by the OpenBSD project. The developers do what is
+right, not what is popular or cool. This philosophy has built an operating
+system that is truly impressive while still maintaining optimal functionality.
+So when I heard the OpenBSD folks were forking the OpenSSL project I was
+ecstatic. A swift kick in the pants, a saying my grandfather often repeated when
+I was younger is precisely what this project needed. OpenSSL grew too big too
+fast and the original scope of the project was lost. The developers were more
+interested in writing code then fixing it. A friend of mine runs the
+&lt;a href="http://opensslrampage.org/"&gt;opensslrampage&lt;/a&gt; blog and precisely outlines the
+problems the OpenBSD devs are facing. Less than two weeks after the fork the
+codebase has already been cut in halve.&lt;/p&gt;
+&lt;p&gt;So with all of that in mind I decided to give OpenBSD a shot and installed it on
+my laptop. My initial reaction was something between shock and bewilderment.
+Everything was working out of the box. I had zero issues with suspend/resume,
+CPU scaling, wireless, or even the media keys.&lt;/p&gt;
+&lt;p&gt;I highly recommend giving it a shot, you might be as surprised as I was in terms
+of hardware support and quality.&lt;/p&gt;</summary></entry><entry><title>Basic PF Configuration</title><link href="https://blog-test.ehouse.io/basic-pf-configuration.html" rel="alternate"></link><updated>2014-02-13T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-02-13:basic-pf-configuration.html</id><summary type="html">&lt;p&gt;After a brief mishap with partition tables and ZFS and FreeBSD are finally setup
+on my personal server. I needed something to act as a firewall and went with PF.
+I decided to base my setup off of security groups for Amazon EC2. All outbound
+traffic is allowed but inbound traffic must pass through a whitelist of
+services. To add another service just add the port name or the port number to
+the tcp_services list.&lt;/p&gt;
+&lt;p&gt;This was what I came up with.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;##&lt;/span&gt;&lt;span class="c"&gt;# MACROS&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; TCP services to allow, either names from /etc/services or port numbers&lt;/span&gt;
+&lt;span class="x"&gt;tcp_services = &amp;quot;&lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="x"&gt;http, https, ssh, rpc, domain}&amp;quot;&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; UDP Services to allow, either names from /etc/services or port numbers&lt;/span&gt;
+&lt;span class="x"&gt;udp_services = &amp;quot;&lt;/span&gt;&lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="x"&gt;domain}&amp;quot;&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Macro of the primary interface&lt;/span&gt;
+&lt;span class="x"&gt;ext_if=&amp;quot;bce1&amp;quot;&lt;/span&gt;
+
+&lt;span class="cp"&gt;##&lt;/span&gt;&lt;span class="c"&gt;# Packet Filtering&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Block all traffic by default&lt;/span&gt;
+&lt;span class="x"&gt;block all&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Ignore lo0 interface for filtering&lt;/span&gt;
+&lt;span class="x"&gt;set skip on lo0&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Allow IN traffic from white listed service macro&lt;/span&gt;
+&lt;span class="x"&gt;pass in on &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;ext_if&lt;/span&gt;&lt;span class="x"&gt; proto tcp to any port &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;tcp_services&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="x"&gt;pass in on &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;ext_if&lt;/span&gt;&lt;span class="x"&gt; proto udp to any port &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;udp_services&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+
+&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Allow ALL outbound traffic&lt;/span&gt;
+&lt;span class="x"&gt;pass out on &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;ext_if&lt;/span&gt;&lt;span class="x"&gt; proto tcp from any to any keep state&lt;/span&gt;
+&lt;span class="x"&gt;pass out on &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;ext_if&lt;/span&gt;&lt;span class="x"&gt; proto udp from any to any keep state&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;To setup PF copy this config to &lt;code&gt;/etc/pf.conf&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Run the command &lt;code&gt;pfctl -ef /etc/pf.conf&lt;/code&gt; to enable pf and load the comfig.&lt;/p&gt;
+&lt;p&gt;The command &lt;code&gt;pfctl -d /etc/pf.conf&lt;/code&gt; can be used to disable pf while debugging.&lt;/p&gt;
+&lt;p&gt;Misc Commands:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pfctl -sr  # view loaded config
+pfctl -ss  # view established connections
+pfctl -vnf # parse ruleset for errors without loading it in
+&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Switching to Pelican</title><link href="https://blog-test.ehouse.io/switching-to-pelican.html" rel="alternate"></link><updated>2013-10-30T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-10-30:switching-to-pelican.html</id><summary type="html">&lt;p&gt;I have become increasingly frustrated with octopress and its complexities. The
+tools I was using to maintain the blog were unnecessarily complicated for what
+they were doing. I was constantly looking for fixes for problems I didn't
+understand. Official documentation I found was just plain wrong at times. So I
+decided it was time for something that made a little more sense for me.&lt;/p&gt;
+&lt;p&gt;I switched to Pelican which is a python based static blog generator. There are a
+couple of oddities I have noticed which I am still trying to work out. Weird CSS
+rules that apply to page elements that don't make sense. It is also much easier
+to setup. Now if only I could figure out how images and plugins worked but that
+will have to wait till the morning.&lt;/p&gt;</summary></entry><entry><title>Why I use Cloudflare</title><link href="https://blog-test.ehouse.io/why-i-use-cloudflare.html" rel="alternate"></link><updated>2013-09-19T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-19:why-i-use-cloudflare.html</id><summary type="html">&lt;p&gt;A &lt;a href="http://worrbase.com/"&gt;friend&lt;/a&gt; of mine recently showed me a service called
+&lt;a href="https://www.cloudflare.com/index.html"&gt;CloudFlare&lt;/a&gt; and I'm surprised it's not
+more commonly used than it is. It is especially good for small sites driven by a
+single server. They offer services like website caching and auto minification of
+CSS and JavaScript. These are all great features for a sysadmin who doesn't
+necessarily want to spend his entire day writing CSS and JavaScript.&lt;/p&gt;
+&lt;p&gt;CloudFlare's line of security features are also impressive. They do analysis of
+traffic heading too and from the server watching for malicious activity like XSS
+and SQL injections. When CloudFlare detects users doing this over and over they
+get blocked from all CloudFlare enabled sites. Rules can also be written to
+restrict content on a user level or even country level.&lt;/p&gt;
+&lt;p&gt;My favorite part probably because I am a networking geek is the use of
+&lt;a href="http://en.wikipedia.org/wiki/Anycast"&gt;anycast&lt;/a&gt; to route traffic. So even though
+my server is in Rochester I get good latency because it is mirrored in San Jose.
+This is normally a feature only available to companies with dozens of data
+centers spread across the country.&lt;/p&gt;
+&lt;p&gt;These are some pretty impressive features for a free service. I would recommend
+this to just about every webmaster out there.&lt;/p&gt;</summary></entry><entry><title>OpenBSD X11 Setup</title><link href="https://blog-test.ehouse.io/openbsd-x11-setup.html" rel="alternate"></link><updated>2013-09-17T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-17:openbsd-x11-setup.html</id><summary type="html">&lt;p&gt;This is my personal setup for my openbsd laptop. I use i3 as my window manager
+and i3lock as a screen lock daemon.&lt;/p&gt;
+&lt;h3&gt;xinitrc&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xmodmap -e &lt;span class="s1"&gt;&amp;#39;remove Lock = Caps\_Lock&amp;#39;&lt;/span&gt;
+xmodmap -e &lt;span class="s1"&gt;&amp;#39;keysym Caps\_Lock = Control\_L&amp;#39;&lt;/span&gt;
+xmodmap -e &lt;span class="s1"&gt;&amp;#39;add Control = Control\_L&amp;#39;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I personally believe the home row is far to important for a caps lock
+key. So I remap it to left control. Makes bash and vim commands easier
+to type. I found the easiest program to use was xmodmap. Just keep in
+mind that in single user mode these settings will not take effect as X11
+is never started.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;LANG&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;en\_US.UTF-8&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;export&lt;/span&gt; MM&lt;span class="se"&gt;\_&lt;/span&gt;CHARSET&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;UTF-8&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I had issues with i3 overwriting locale settings. The solution was to
+set them in xinit instead of zshrc.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="x"&gt;LOCK=&amp;quot;i3lock -i /home/ehouse/Pictures/Wallpapers/lockscreen.png&amp;quot;&lt;/span&gt;
+&lt;span class="x"&gt;xautolock -locker &amp;quot;\&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;LOCK&lt;/span&gt;&lt;span class="x"&gt;&amp;quot; -nowlock &amp;quot;\&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;LOCK&lt;/span&gt;&lt;span class="x"&gt;&amp;quot; &amp;amp;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I was playing around with slimlock originally but it is incompatible
+with FreeBSD. It requires specific libraries only available in the Linux
+kernel. Instead I decided to use i3lock and xautolock. Simple, but works
+well.&lt;/p&gt;
+&lt;h3&gt;i3/config&lt;/h3&gt;
+&lt;p&gt;I am only going to include code that wasn't auto generated.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# start a terminal&lt;/span&gt;
+bindsym &lt;span class="se"&gt;\$&lt;/span&gt;mod+Return &lt;span class="nb"&gt;exec&lt;/span&gt; sakura
+
+&lt;span class="c1"&gt;# Screen Lock&lt;/span&gt;
+bindsym &lt;span class="se"&gt;\$&lt;/span&gt;mod+q &lt;span class="nb"&gt;exec&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;xautolock -locknow&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Instead of relying on i3-sensible-terminal I just wrote in sakura. It is
+gtk based terminal that doesn't have an incredible dependency list like
+terminator or roxterm. I set a shortcut for locking the display.
+Xautolock and i3lock both support suspend and lock but I haven't played
+around with it yet. I chose meta+q as it was not something I would
+accidentally hit.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;exec&lt;/span&gt; --no-startup-id nitrogen –restore
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;nitrogen works very well for setting X wallpapers. It requires that you
+start nitrogen and manually set the wallpaper though. It doesn't support
+sideshow wallpapers but it probably wouldn't be too hard to write a
+cronjob to do that.&lt;/p&gt;
+&lt;p&gt;I also remapped all of the movement keys over one to be more vimlike. I
+use G and V for horizontal and vertical splits. As much as I understand
+why they didn't go with hjkl I don't want to relearn the land positions.
+And finally I used i3menu for the menu bar. It comes with i3 and it is
+very easy to configure. It doesn't put much load on the system when
+polling which is always a plus. Laptop battery life is precious.&lt;/p&gt;
+&lt;p&gt;That is my X11 setup in a nutshell. If anyone is interested in how I got
+something to work don't hesitate and throw me an email. I always enjoy a
+good technical conversation.&lt;/p&gt;</summary></entry><entry><title>Adventure Into PCBSD</title><link href="https://blog-test.ehouse.io/adventure-into-pcbsd.html" rel="alternate"></link><updated>2013-09-15T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-15:adventure-into-pcbsd.html</id><summary type="html">&lt;p&gt;While popping around the BSD community I keep hearing about PCBSD.
+Most people seem to detest it but some people like it. PCBSD calls itself a “...
+user friendly desktop Operating System based on FreeBSD.” I wasn't quite
+sure about the “user friendly” part but I am going to give it a shot.&lt;/p&gt;
+&lt;p&gt;I wanted a backup of my SSD in the likely chance that I dislike/break it
+and want out. The solution came in the form of
+&lt;a href="http://www.freebsd.org/cgi/man.cgi?query=dump&amp;amp;sektion=8"&gt;dump&lt;/a&gt; and
+&lt;a href="http://www.freebsd.org/cgi/man.cgi?query=restore"&gt;restore&lt;/a&gt;. Incremental
+backups of the file system, perfect. Had I known more when I setup the
+system I would've used ZFS which contains its own utility for
+incremental backups. I booted into single user mode and mounted the
+filesystem in read only mode.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;newfs -U /dev/da0
+mount /dev/da0 /mnt/usb
+dump -C16 -b64 -0a -h0 -f /mnt/flashdrive/root.dump /dev/ada0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This took about 10 minutes and I was off installing PCBSD. My first
+impressions of the installer were “ohhhh... Pretty”. The entire process
+of installing is done within what looks like a KDE environment. While
+superfluous, it worked pretty well and I had the system setup in no
+time. I thought it was cool that you could pick from a list of window
+managers to come pre-installed on the system that included i3, my
+personal favorite. Installation was done and it was time to reboot and
+initiate first bootup which comes with it's own slew of setup steps.&lt;/p&gt;
+&lt;p&gt;Nothing, it dropped into the bootup sequence and the screen went black.
+I reboot and tried again. Still nothing. Given no chance to boot in
+single user mode I didn't see many options. I re-installed the system
+this time choosing only defaults. First boot up and still a black
+screen. I searched in vain for any way to drop into a shell during the
+PCBSD install.&lt;/p&gt;
+&lt;p&gt;I dropped into a FreeBSD live session and tried to mount the SSD. I
+futzed around with the boot settings trying to find a combo that would
+produce a bootable system. All I managed to do was mess up the boot
+sequence. Getting frustrated I decided to call it a night.&lt;/p&gt;
+&lt;p&gt;I checked the wiki and saw that my laptop was not on the list of laptops
+compatible with PCBSD. I decided the next day that it wasn't worth the
+time or effort to get it booting correctly. Lazily I reinstalled FreeBSD
+and only installed the core package and setup nothing else, after all I
+just needed the partition table. After the installation finished I
+dropped into the live environment.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;newfs -U /dev/ada0p2
+mount /dev/ada0p2 /media
+mount /dev/da0 /mnt
+mount /dev/da1 /tmp
+cd /media
+restore -rf /mnt/root.dump
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The interesting step there is mounting the second flashdrive under tmp.
+One of the limitations I found with restore is it needs to be able to
+write to /tmp before it can do a backup. As I was in a read only livecd
+that posed a problem. The restore was done in a few short minutes. It
+was weird when Firefox popped up asking if I would like to reopen my
+tabs. Every thing worked a little too perfectly. We can't have that.&lt;/p&gt;
+&lt;p&gt;Up next – How not to upgrade to FreeBSD 9.2&lt;/p&gt;</summary></entry><entry><title>First time using FreeBSD</title><link href="https://blog-test.ehouse.io/first-time-using-freebsd.html" rel="alternate"></link><updated>2013-08-30T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-08-30:first-time-using-freebsd.html</id><summary type="html">&lt;p&gt;As a long time Slackware user I have always been interested in how BSD style
+operating systems. It's been two years and I still try to keep to KISS as much
+as possible when writing software or maintaining systems. In preparation of
+switching my personal server to FreeBSD I wanted to run my ThinkPad X230 with
+FreeBSD so I could learn the ins and outs of the OS. I am using FreeBSD 9.1 as
+it is most current but 9.2 release looks to be around the corner.&lt;/p&gt;
+&lt;p&gt;I agree with what the BSD projects are tryin to acomplish and plan on writing
+about it here.&lt;/p&gt;</summary></entry></feed>

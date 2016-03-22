@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs -->
+    <title>blog.ehouse.io</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Tech and D&amp;D, what more could you want?">
+    <meta name="author" content="Ethan House">
+    <!-- Mobile Specific Metas  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/local.css">
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/theme/images/favicon.png">
+  </head>
+  <body>
+    <!-- Primary Page Layout -->
+    <div class="container">
+      <div class="row">
+	<div class="column">
+	  <div id="nav">
+	    <ul>
+              <li><a href="/">Blog</a></li>
+              <li><a href="/pages/projects.html">Projects</a></li>
+              <li><a href="/pages/dd.html">D&amp;D</a></li>
+              <li><a href="/pages/about.html">About</a></li>
+	    </ul>
+	  </div> <!-- #nav -->
+	  <div id="headerImage">
+	    <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+	  </div> <!-- #headerImage -->
+        <h1>Featured Article</h1>
+        <article>
+            <header>
+                <h2 class="featured"><a href="./easy-server-naming-scheme.html">Easy Server Naming Scheme</a></h2>
+            </header>
+            <p class="date">Posted on March 11, 2016 by Ethan House</p>
+            <p>Coming up with names for servers or VM's can be pretty difficult. Often times
+names become obsolete or don't describe the server in a way that's meaningful.
+The best system is one where every machine has a unique name as it's A record
+and all of the service specific names become CNames. This allows the server to
+host many services without causing naming confusion or obsolete hostnames if a
+primary service is changed.</p>
+<p>The article written by
+<a href="http://mnx.io/blog/a-proper-server-naming-scheme/">mnx.io</a> describes in great
+detail how to pull this off. I've found it works best in smallish environments
+of less then 100 servers. I've helped implement this scheme in two places and it
+worked out great both times. I would heavily recommend it whenever possible.</p>
+<h3>Unique Names</h3>
+<p>I've set up a server endpoint that will retrieve a list of unique names from
+<a href="https://web.archive.org/web/20090918202746/http://tothink.com/mnemonic/wordlist.html">here</a>.
+The pool of words comes from Oren Tirosh's mnemonic encoding project. The order
+of the names will be random so it's up to you to verify the names aren't already
+in use for your environment. You can can randomly generate list of hostnames at
+<a href="https://hosts.ehouse.io">hosts.ehouse.io</a>.</p>
+        </article>
+            <h1>Other Articles</h1>
+        <article>
+        <header>
+          <h2 class="featured"><a href="./vim-for-blog-writing.html" rel="bookmark" title="Permalink to Vim for Blog Writing">Vim for Blog Writing</a></h2>
+        </header>
+        <p class="date">Posted on November 19, 2015 by Ethan House</p>
+        <p>Quite a lot of issues I had writing blog posts in Vim were solved with a few config edits.</p>
+        <a class="readmore" href="./vim-for-blog-writing.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./mu4e-as-a-email-client.html" rel="bookmark" title="Permalink to mu4e as a email client">mu4e as a email client</a></h2>
+        </header>
+        <p class="date">Posted on July 03, 2015 by Ethan House</p>
+        <p>A coworker told me about this awesome life changing mail client called mu4e so of course I had to try it. Mu is an incredibly powerful mail indexer built on top of xapian. It can index and search through 20,000+ emails in fractions of a second. Its searching language ...</p>
+        <a class="readmore" href="./mu4e-as-a-email-client.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./basic-sieve-usage-and-configuration.html" rel="bookmark" title="Permalink to Basic Sieve Usage and Configuration">Basic Sieve Usage and Configuration</a></h2>
+        </header>
+        <p class="date">Posted on June 22, 2015 by Ethan House</p>
+        <p>A quick guide to setting up and using sieve for Dovecot 2.x email servers.</p>
+        <a class="readmore" href="./basic-sieve-usage-and-configuration.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./temporary-mail-queue-server.html" rel="bookmark" title="Permalink to Temporary Mail Queue Server">Temporary Mail Queue Server</a></h2>
+        </header>
+        <p class="date">Posted on June 21, 2015 by Ethan House</p>
+        <p>I needed to stand up a temporary queue server to store mail while our primary
+file server was out of commission. This was the config I created to do just
+that. I went with OpenSMTPD because it was by far the easiest choice when
+standing up a new SMTP server ...</p>
+        <a class="readmore" href="./temporary-mail-queue-server.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./wrath-of-the-lich-witch-part-1.html" rel="bookmark" title="Permalink to Wrath of the Lich Witch Part 1">Wrath of the Lich Witch Part 1</a></h2>
+        </header>
+        <p class="date">Posted on November 24, 2014 by Ethan House</p>
+        <p>A side quest I ran when we were down a few players turned into one of the more exciting game's I've GM'ed.</p>
+        <a class="readmore" href="./wrath-of-the-lich-witch-part-1.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./basic-smtp-email-server.html" rel="bookmark" title="Permalink to Basic SMTP Email Server">Basic SMTP Email Server</a></h2>
+        </header>
+        <p class="date">Posted on November 05, 2014 by Ethan House</p>
+        <p>Running your own mail server can seem intimidating at first but once the
+different layers are broken down it becomes much easier to tackle. There are
+three main parts of a mail stack, the mta, mda, and mua. The Mail Transfer Agent
+(MTA) is what handles the sending and receiving ...</p>
+        <a class="readmore" href="./basic-smtp-email-server.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./automating-ports-with-poudriere.html" rel="bookmark" title="Permalink to Automating Ports with Poudriere">Automating Ports with Poudriere</a></h2>
+        </header>
+        <p class="date">Posted on September 24, 2014 by Ethan House</p>
+        <p>While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
+custom build flags. While ports is pretty decent in itself it is a royal pain to automate. New to FreeBSD 10, poudriere
+allows ports to be built in ...</p>
+        <a class="readmore" href="./automating-ports-with-poudriere.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./advanced-pf-usage.html" rel="bookmark" title="Permalink to Advanced PF Usage">Advanced PF Usage</a></h2>
+        </header>
+        <p class="date">Posted on June 20, 2014 by Ethan House</p>
+        <p>Since my last PF post I've made some changes to my pf.conf file. I've broken the
+config into its own separate section and displayed them below with some
+explanation. All together the config is organized and easy to maintain, which is
+always good.</p>
+<h3>Macros</h3>
+<p>Macros can be ...</p>
+        <a class="readmore" href="./advanced-pf-usage.html">read more</a>
+        </article>
+        <hr />
+        <article>
+        <header>
+          <h2 class="featured"><a href="./openbsd-and-libressl.html" rel="bookmark" title="Permalink to OpenBSD and LibreSSL">OpenBSD and LibreSSL</a></h2>
+        </header>
+        <p class="date">Posted on April 26, 2014 by Ethan House</p>
+        <p>I've always been impressed by the OpenBSD project. The developers do what is
+right, not what is popular or cool. This philosophy has built an operating
+system that is truly impressive while still maintaining optimal functionality.
+So when I heard the OpenBSD folks were forking the OpenSSL project I ...</p>
+        <a class="readmore" href="./openbsd-and-libressl.html">read more</a>
+        </article>
+        <hr />
+<p class="paginator">
+    Page 1 / 2
+        <a href="./index2.html">Next &rarr;</a>
+</p>
+
+<!-- <div class="pagination"> -->
+<!--   <ul> -->
+<!--      -->
+<!--     <li class="prev disabled"><a class="button" href="#">&larr; Previous</a></li> -->
+<!--      -->
+
+<!--      -->
+<!--     <li class="active"><a class="button" href="./index.html">1</a></li> -->
+<!--      -->
+<!--     <li class=""><a class="button" href="./index2.html">2</a></li> -->
+<!--      -->
+
+<!--      -->
+<!--     <li class="next"><a class="button" href="./index2.html">Next &rarr;</a></li> -->
+<!--      -->
+
+<!--   </ul> -->
+<!-- </div> -->
+	  <div id="footer">
+	    <ul>
+              <li><a href="https://github.com/ehouse">Github</a></li>
+              <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+              <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+	    </ul>
+	    <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+	    <p>&copy; Ethan House 2013 - 2016</p>
+	  </div> <!-- #footer -->
+	</div> <!-- .column -->
+      </div> <!-- .row -->
+    </div> <!-- .container -->
+  </body>
+</html>
