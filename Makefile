@@ -15,7 +15,7 @@ FTP_TARGET_DIR=/
 SSH_HOST=bawls.ehouse.io
 SSH_PORT=22
 SSH_USER=ehouse
-SSH_TARGET_DIR=/home/ehouse/public_html/blog_test
+SSH_TARGET_DIR=/home/ehouse/public_html/blog
 
 S3_BUCKET=my_s3_bucket
 

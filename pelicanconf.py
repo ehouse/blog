@@ -26,7 +26,7 @@ AUTHOR_FEED_RSS = None
 
 THEME = os.getcwd() + "/theme/"
 
-PLUGIN_PATHS = [os.getcwd() +'/pelican-plugins']
+PLUGIN_PATHS = [os.getcwd() +'/active-plugins']
 
 PLUGINS = ['sitemap', 'gzip_cache']
 
@@ -45,9 +45,9 @@ SITEMAP = {
 }
 
 MENUITEMS = (('Blog','/'),
-             ('Projects','/pages/projects.html'),
-             ('D&amp;D','/pages/dd.html'),
-	     ('About','/pages/about.html'),)             
+      ('Projects','/projects.html'),
+      ('D&amp;D','/dd.html'),
+      ('About','/about.html'),)
 
 # Blogroll
 #LINKS = (('Pelican', 'http://getpelican.com/'),
@@ -57,8 +57,8 @@ MENUITEMS = (('Blog','/'),
 
 # Social widget
 SOCIAL = (('Github', 'https://github.com/ehouse'),
-          ('Keybase', 'https://keybase.io/ehouse'),
-          ('Twitter','https://twitter.com/ewhhouse'),)
+      ('Keybase', 'https://keybase.io/ehouse'),
+      ('Twitter','https://twitter.com/ewhhouse'),)
 
 TWITTER_USERNAME = "ewhouse"
 
@@ -66,3 +66,11 @@ DEFAULT_PAGINATION = 10
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
+
+ARTICLE_URL = 'posts/{slug}.html'
+ARTICLE_SAVE_AS = 'posts/{slug}.html'
+PAGE_URL = '{slug}.html'
+PAGE_SAVE_AS = '{slug}.html'
+
+TAGS_SAVE_AS = ''
+TAG_SAVE_AS = ''

@@ -4,12 +4,14 @@
 {% for article in articles_page.object_list %}
     {# First item #}
     {% if loop.first and not articles_page.has_previous() %}
-        <h1>Featured Article</h1>
+        <!--<h1>Featured Article</h1>-->
         <article>
             <header>
-                <h2 class="featured"><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
+                <h2><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h2>
             </header>
             <p class="date">Posted on {{article.locale_date}} by {{article.author}}</p>
+            <!--{{ article.summary }}-->
+            <!--<a class="readmore" href="{{ SITEURL }}/{{ article.url }}">read more</a>-->
             {{ article.content }}
         </article>
         {% if loop.length > 1 %}
@@ -19,13 +21,12 @@
     {% else %}
         <article>
         <header>
-          <h2 class="featured"><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h2>
+          <h3 class="blog-roll"><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title }}</a></h3>
         </header>
         <p class="date">Posted on {{article.locale_date}} by {{article.author}}</p>
-        {{ article.summary }}
-        <a class="readmore" href="{{ SITEURL }}/{{ article.url }}">read more</a>
+        <!--{{ article.summary }}-->
+        <!--<a class="readmore" href="{{ SITEURL }}/{{ article.url }}">read more</a>-->
         </article>
-        <hr />
     {% endif %}
     {% if loop.last %}
         {% if loop.last and (articles_page.has_previous() or not articles_page.has_previous() and loop.length > 1) %}

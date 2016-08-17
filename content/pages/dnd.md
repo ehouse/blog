@@ -6,16 +6,20 @@ My collection of D&D stories and rules I've created over years of playing 3.5
 and Pathfinder. I've also included a second for some homebrew campaigns I'm
 working on.
 
-### D&D Stories
+## D&D Stories
 
-* [Wrath of the Lich Witch: Part 1](/wrath-of-the-lich-witch-part-1.html)
+- [Wrath of the Lich Witch: Part 1](/posts/wrath-of-the-lich-witch-part-1.html)  
+Part one of a one off game I ran. Ended up killing most of the party and turned the spell caster into a Litch.
 
-### House Rules
+- [Wrath of the Lich Witch: Part 2](/)  
+Part 2 Coming Soon!
 
-* [D&D House Rules](/pages/dd-house-rules.html)  
-I've written up some rules that I play with in my games.
+## House Rules
 
-### Homebrewed Adventures
+- [D&D House Rules](/dd-house-rules.html)  
+House rules I use in games that I DM
 
-I'm currently writing my own homebrew adventure. When it is done and I've played
-through it I will be posting it here.
+## Homebrewed Adventures
+
+- [Casino of Terror](/casino-of-terror.html)  
+One shot I created in an hour. Really rough but pretty fun.

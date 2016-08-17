@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs -->
+    <title>ISTS Blue Team 4 Postmortem</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Tech and D&amp;D, what more could you want?">
+    <meta name="author" content="Ethan House">
+    <!-- Mobile Specific Metas  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/ehouse.css">
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/theme/images/favicon.png">
+  </head>
+  <body>
+    <!-- Primary Page Layout -->
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <div id="nav">
+            <ul>
+                <li><a href="/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+                <li><a href="/dd.html">D&amp;D</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+          </div> <!-- #nav -->
+          <div id="headerImage">
+            <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+          </div> <!-- #headerImage -->
+
+<article>
+  <h2><a href="../posts/ists-blue-team-4-postmortem.html" rel="bookmark" title="Permalink to ISTS Blue Team 4 Postmortem">ISTS Blue Team 4 Postmortem</a></h2>
+  <p class="date">Posted on March 27, 2016 by Ethan House </p>
+  <p>This past weekend I participated in a hacking competition Information Secuirty
+Talent Search at RIT as a defending team. The goal was to attack other teams
+machines while keeping yours online.  While this is going on there are bonuses
+or injects being handed out that get’s you bonus points for completing various
+challenges. An example of an inject was to run and connect to a minecraft server
+on some other teams servers.</p>
+<p>Unfortunately we didn’t win but our team did win the title of best defense which
+I hold as high as winning. My team knew going in that our hacking and offensive
+skills were lacking compared to the other teams but we gave it our all.</p>
+<h2>Our Strategy</h2>
+<h3>Commands that Helped</h3>
+<ul>
+<li><code>w</code> - Shows who’s logged in.</li>
+<li><code>ss</code> OR <code>netstat -alutpn</code> OR <code>sockstat -4</code> - Shows active network connections to
+the outside world.</li>
+<li><code>routes</code> - Used to display current routes the system is using. Once or twice I
+found a route to another team.</li>
+</ul>
+<h3>Files and Configs to Watch</h3>
+<p>There were quiet a few files that had absolutely no reason to be changing through
+the competition so we either made them non-writeable to watched them like a
+hawk.</p>
+<ul>
+<li><code>.bashrc</code> AND <code>.vimrc</code> - quite a few teams hid commands in these files that
+would run when a user did something. Very nasty. Ensure these are simple and
+fully understood especially on the root user.</li>
+<li><code>my.cnf</code> OR <code>postgresql.conf</code> - Only allow connections from IP's you trust.
+Double check your account privileges as well, there is zero reason an admin
+account should ever connect over the network. Restricting account access won't
+stop a SQL injection but it will save your machine and your other databases. </li>
+</ul>
+<h3>PURGE EVERYTHING</h3>
+<p>This turned out to be the winning strategy in the long run in terms of keeping
+us running. If we saw something that seemed out of place or was not needed we
+tar’ed it up and plopped it in /root for safe keeping. All services were
+stripped to their bare essentials and left in what I would call a barely working
+state but was just enough to fulfill the score board checks. This included
+disabling ssh and sudo which removed most of the attack vectors on the machines.
+Dirty but REALLY effective. </p>
+<h3>Firewalls</h3>
+<p>Many of the attacks or Injects involved opening processes on ports and running
+commands through them. The direct counter to this of course is to lock the whole
+system down to only the ports it needs. It’s impossible to open a million netcat
+processes on every port if binding is blocked. The email server only needed pop3
+and smtp so everything was blocked except for port 25 and 110.</p>
+<h3>Condense and Minimize</h3>
+<p>Stick to what you need in the long run. We did not have the control we liked on
+our cloud infrastructure so we moved as much as we could to our local esxi
+server. Our build server ran a alpine linux instance with ssh and our AD server
+was just DNS. The scoring engine only cared that they were available, not that
+they were usable. We actually had people on red and white team complain to us at
+how difficult it was to get at these boxes and that feels like a victory to me.</p>
+<h3>Pitfalls to Avoid</h3>
+<p>Our HTTP server had to host a buggy and security nightmare php app which also
+ran our banking terminal. For the first half of the competition I just hosted
+the default apache page which was enough to score. The problem arose when we
+actually had to use the banking app to pay our power bill to keep our servers
+running. The red team had XSS’ed it through a specially crafted tweet that would
+drain your balance every time you access the page. I mistakenly ignored large
+aspects of the banking aspects of the game as well as the app. I should have
+gone through it at the beginning and removed the XSS vectors.</p>
+<h2>What We Loved</h2>
+<p>I thought the infrastructure of the competition was well put together. Rarely
+were there any obvious lag or hiccups with with the VM's or networking. The only
+issues we had with hardware was when our VM server had a hard drive failure
+which was hardly the fault of anyone running the competition. </p>
+<h2>What We Want Changed Next Year</h2>
+<p>As I mentioned the game had a concept of money which was awarded by completing
+challenges. My issues come from what it can be spent on, specifically three of
+them. Restore a system to it’s original snapshot, Power Off and Console Access.
+All of our VM’s were shutdown with zero way for us to turn it back on for about
+an hour. We had ALL of our VM’s reset THREE times. FINALLY, a team payed to have
+console access to our VM’s where they turned them off and booted into single
+user mode.</p>
+<p>There was no way to block this, no way to defend against this and once it’s been
+paid for no one to mitigate. Three times I had to rebuild our VM’s as if we were
+at the beginning of the competition all while every team destroyed our VM’s with
+the known vulnerabilities. By the time we got half of the VM’s in a safe state
+the other half are owned beyond repair and had to be reset. We ended up draining
+our entire bank account just getting machines turned back on or reset to remove
+the forced backdoors. This is precisely why we moved all of our services we
+could to the local ESXI cluster as we couldn’t trust the cloud infrastructure.
+Due to routing issues we were only able to put half of the VM’s we needed to
+host behind the local ESXI and we continue to fight off resets and bought
+backdoors for the entire competition. Frustrating for us and embarrassing for
+the other teams that had to buy their through our servers defenses.</p>
+</article>
+<!--<a href="https://twitter.com/share" class="twitter-share-button"-->
+   <!--data-count="horizontal" data-via="ewhouse">Tweet</a><script-->
+   <!--type="text/javascript"-->
+   <!--src="https://platform.twitter.com/widgets.js"></script>-->
+
+<script>window.twttr = (function(d, s, id) {
+     var js, fjs = d.getElementsByTagName(s)[0],
+       t = window.twttr || {};
+     if (d.getElementById(id)) return t;
+     js = d.createElement(s);
+     js.id = id;
+     js.src = "https://platform.twitter.com/widgets.js";
+     fjs.parentNode.insertBefore(js, fjs);
+    
+     t._e = [];
+     t.ready = function(f) {
+       t._e.push(f);
+     };
+    
+     return t;
+   }(document, "script", "twitter-wjs"));</script>
+
+<a class="twitter-share-button"
+     href="https://twitter.com/intent/tweet"> Tweet</a>
+
+          <div class="footer">
+            <ul>
+                <li><a href="https://github.com/ehouse">Github</a></li>
+                <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+                <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+            </ul>
+            <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+            <p>&copy; Ethan House 2013 - 2016</p>
+          </div> <!-- #footer -->
+        </div> <!-- .column -->
+      </div> <!-- .row -->
+    </div> <!-- .container -->
+  </body>
+</html>

@@ -4,7 +4,7 @@
 
 <article>
   <h2><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark" title="Permalink to {{ article.title|striptags }}">{{ article.title}}</a></h2>
-  <p class="date">Posted on {{article.locale_date}} by {{article.author}}</p>
+  <p class="date">Posted on {{article.locale_date}} by {{article.author}} {% if article.modified %} <br /> Last modified: {{ article.modified | strftime('%B %d, %Y') }} {% endif %}</p>
   {{ article.content }}
 </article>
 {% include 'twitter.html' %}

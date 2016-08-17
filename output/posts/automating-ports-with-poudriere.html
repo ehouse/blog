@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs -->
+    <title>Automating Ports with Poudriere</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Tech and D&amp;D, what more could you want?">
+    <meta name="author" content="Ethan House">
+    <!-- Mobile Specific Metas  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/ehouse.css">
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/theme/images/favicon.png">
+  </head>
+  <body>
+    <!-- Primary Page Layout -->
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <div id="nav">
+            <ul>
+                <li><a href="/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+                <li><a href="/dd.html">D&amp;D</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+          </div> <!-- #nav -->
+          <div id="headerImage">
+            <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+          </div> <!-- #headerImage -->
+
+<article>
+  <h2><a href="../posts/automating-ports-with-poudriere.html" rel="bookmark" title="Permalink to Automating Ports with Poudriere">Automating Ports with Poudriere</a></h2>
+  <p class="date">Posted on September 24, 2014 by Ethan House </p>
+  <p>While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
+custom build flags. While ports is pretty decent in itself it is a royal pain to automate. New to FreeBSD 10, poudriere
+allows ports to be built in the background with no human interaction post setup. Setup is quick and easy to maintain.</p>
+<h3>Setup</h3>
+<p>I recommend copying over the sample conf file and making changes as you see fit. Make sure to read it over as it will
+not work out of the box.</p>
+<div class="highlight"><pre><span></span>cp /usr/local/etc/poudriere.conf.sample /usr/local/etc/poudriere.conf
+</pre></div>
+
+
+<p>I have also included my config for reference. This should work assuming you have the files and folders in the proper
+places and create a SSL key for packaging signing. Check out the signing section below.</p>
+<div class="highlight"><pre><span></span><span class="nv">ZPOOL</span><span class="o">=</span>zroot
+
+<span class="nv">FREEBSD_HOST</span><span class="o">=</span>ftp://ftp.freebsd.org
+<span class="nv">RESOLV_CONF</span><span class="o">=</span>/etc/resolv.conf
+<span class="nv">BASEFS</span><span class="o">=</span>/usr/local/poudriere
+<span class="nv">USE_PORTLINT</span><span class="o">=</span>no
+<span class="nv">USE_TMPFS</span><span class="o">=</span>yes
+<span class="nv">DISTFILES_CACHE</span><span class="o">=</span>/usr/ports/distfiles
+<span class="nv">CHECK_CHANGED_OPTIONS</span><span class="o">=</span>verbose
+<span class="nv">CHECK_CHANGED_DEPS</span><span class="o">=</span>yes
+
+<span class="nv">PKG_REPO_SIGNING_KEY</span><span class="o">=</span>/etc/ssl/private/pkg.key
+<span class="nv">CCACHE_DIR</span><span class="o">=</span>/var/cache/ccache
+</pre></div>
+
+
+<h3>First Run</h3>
+<p>Run these commands to setup the poudriere environment. I included comments on what each line does. This will create the
+ports tree and setup the jail template.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Create copy of the ports tree</span>
+poudriere ports -c
+<span class="c1"># Create base jail</span>
+poudriere jail -c -j 10x64 -v 10.0-RELEASE -a amd64
+<span class="c1"># Create port list file for poudrier to build from</span>
+portmaster --list-origins <span class="p">|</span> sort -d &gt; /usr/local/etc/poudriere-list
+</pre></div>
+
+
+<p>You can have poudriere build packages with special options. These options will persist across builds.</p>
+<div class="highlight"><pre><span></span>poudriere options -c www/firefox
+</pre></div>
+
+
+<h3>Package Signing</h3>
+<p>Even if your repo is private, signing packages is a good thing to do. Assuming you keep your private key private you can
+be sure the packages were built on your system. Distribute the cert however you see fit but make sure anyone using your
+repo has access to it.</p>
+<div class="highlight"><pre><span></span>mkdir -p /usr/local/etc/ssl/keys /usr/local/etc/ssl/certs
+chmod <span class="m">600</span> /usr/local/etc/ssl/keys
+openssl genrsa -out /usr/local/etc/ssl/keys/pkg.key 4096
+openssl rsa -in /usr/local/etc/ssl/keys/pkg.key -pubout &gt; /usr/local/etc/ssl/certs/pkg.cert
+</pre></div>
+
+
+<h3>Final Setup</h3>
+<p>You're almost done. All you have left to do is actually host the content somewhere. Just point your trusty webserver at
+the package set and you're ready to go.</p>
+<div class="highlight"><pre><span></span>server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+    server_name  pkg.ehouse.io<span class="p">;</span>
+
+    location / <span class="o">{</span>
+        autoindex on<span class="p">;</span>
+        root /usr/local/poudriere/data/packages/10amd64-default/<span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Now you need to create the repo for FreeBSD to read from. Create the file /usr/local/etc/pkg/repos/poudriere.conf for
+pkg to read from. The contents of the repo file are below. Adjust the url to work for your system.</p>
+<div class="highlight"><pre><span></span>poudriere: <span class="o">{</span>
+  url: <span class="s2">&quot;http://pkg.ehouse.io&quot;</span>,
+  mirror_type: <span class="s2">&quot;http&quot;</span>,
+  signature_type: <span class="s2">&quot;pubkey&quot;</span>,
+  pubkey: <span class="s2">&quot;/usr/local/etc/ssl/certs/pkg.cert&quot;</span>,
+  enabled: yes
+<span class="o">}</span>
+</pre></div>
+
+
+<p>Time to automate. I wrote up a series of cronjobs to handle the processes of automating. Tweak to how you see fit.</p>
+<div class="highlight"><pre><span></span>@weekly     /usr/local/bin/poudriere ports -u<span class="p">;</span> /usr/local/bin/poudriere bulk -f /usr/local/etc/poudriere-list -j 10x64
+<span class="m">0</span> <span class="m">6</span> * * *     /usr/sbin/pkg update
+<span class="m">0</span> <span class="m">23</span> * * *     /usr/local/sbin/portmaster --list-origins <span class="p">|</span> sort -d &gt; /usr/local/etc/poudriere-list
+</pre></div>
+
+
+<h3>Web Frontend</h3>
+<p>Poudriere includes a neat little web frontend to watch packages as they are built. Example
+<a href="http://pkgstats.ehouse.io/">Here</a>. I included the nginx config I wrote. Change the root to point at what ever you
+named the jail template.</p>
+<div class="highlight"><pre><span></span>server <span class="o">{</span>
+    listen       80<span class="p">;</span>
+    server_name  pkgstats.ehouse.io<span class="p">;</span>
+
+    location / <span class="o">{</span>
+        root /usr/local/poudriere/data/logs/bulk/10x64-default/latest<span class="p">;</span>
+        index index.html<span class="p">;</span>
+        autoindex on<span class="p">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+
+
+<p>There you go. A fully functional automated ports building process. Probably took no more then 30 minutes.</p>
+<p>I used <a href="http://www.bsdnow.tv/tutorials/poudriere">BSDNow</a> for reference when writing this. Check out their stuff, it's
+pretty great.</p>
+</article>
+<!--<a href="https://twitter.com/share" class="twitter-share-button"-->
+   <!--data-count="horizontal" data-via="ewhouse">Tweet</a><script-->
+   <!--type="text/javascript"-->
+   <!--src="https://platform.twitter.com/widgets.js"></script>-->
+
+<script>window.twttr = (function(d, s, id) {
+     var js, fjs = d.getElementsByTagName(s)[0],
+       t = window.twttr || {};
+     if (d.getElementById(id)) return t;
+     js = d.createElement(s);
+     js.id = id;
+     js.src = "https://platform.twitter.com/widgets.js";
+     fjs.parentNode.insertBefore(js, fjs);
+    
+     t._e = [];
+     t.ready = function(f) {
+       t._e.push(f);
+     };
+    
+     return t;
+   }(document, "script", "twitter-wjs"));</script>
+
+<a class="twitter-share-button"
+     href="https://twitter.com/intent/tweet"> Tweet</a>
+
+          <div class="footer">
+            <ul>
+                <li><a href="https://github.com/ehouse">Github</a></li>
+                <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+                <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+            </ul>
+            <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+            <p>&copy; Ethan House 2013 - 2016</p>
+          </div> <!-- #footer -->
+        </div> <!-- .column -->
+      </div> <!-- .row -->
+    </div> <!-- .container -->
+  </body>
+</html>

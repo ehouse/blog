@@ -1,7 +1,6 @@
 ---
 title: Easy Server Naming Scheme
 date: 2016-03-11
-summary: Naming servers doesn't have to be difficult. 
 ---
 
 Coming up with names for servers or VM's can be pretty difficult. Often times

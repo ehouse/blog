@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs -->
+    <title>Advanced PF Usage</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Tech and D&amp;D, what more could you want?">
+    <meta name="author" content="Ethan House">
+    <!-- Mobile Specific Metas  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/ehouse.css">
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/theme/images/favicon.png">
+  </head>
+  <body>
+    <!-- Primary Page Layout -->
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <div id="nav">
+            <ul>
+                <li><a href="/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+                <li><a href="/dd.html">D&amp;D</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+          </div> <!-- #nav -->
+          <div id="headerImage">
+            <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+          </div> <!-- #headerImage -->
+
+<article>
+  <h2><a href="../posts/advanced-pf-usage.html" rel="bookmark" title="Permalink to Advanced PF Usage">Advanced PF Usage</a></h2>
+  <p class="date">Posted on June 20, 2014 by Ethan House </p>
+  <p>Since my last PF post I've made some changes to my pf.conf file. I've broken the
+config into its own separate section and displayed them below with some
+explanation. All together the config is organized and easy to maintain, which is
+always good.</p>
+<h3>Macros</h3>
+<p>Macros can be thought of as variables. They can store either a single scalar value
+or an arrays of values separated by a comma and surrounded by curly braces. All
+scalars must be in quotes.</p>
+<div class="highlight"><pre><span></span><span class="c1"># TCP services to allow, either names from /etc/services or port numbers</span>
+<span class="nv">tcp_services</span> <span class="o">=</span> <span class="s2">&quot;{http, https, ssh, 25565, 8123, 8080, 8000, 12345}&quot;</span>
+<span class="c1"># UDP Services to allow, either names from /etc/services or port numbers</span>
+<span class="nv">udp_services</span> <span class="o">=</span> <span class="s2">&quot;{domain, 60000:60010}&quot;</span>
+
+<span class="c1"># Macro of the primary interface</span>
+<span class="nv">ext_if</span><span class="o">=</span><span class="s2">&quot;bce1&quot;</span>
+<span class="nv">jail_if</span><span class="o">=</span><span class="s2">&quot;lo1&quot;</span>
+</pre></div>
+
+
+<p>Pretty much the same as before, except now I have a section for mosh. I use PF's
+colon operator to give me a range of ports, 60000 through 60010.</p>
+<h3>Tables</h3>
+<p>Tables are similar to macro groups except they can be edited without restarting
+PF. Great for blacklists or whitelists. Tables can only store Ip addresses though,
+limiting there use.</p>
+<div class="highlight"><pre><span></span>table &lt;whitelist&gt; <span class="o">{</span> 11.22.33.44, 123.45.67.89 <span class="o">}</span>
+</pre></div>
+
+
+<p>I've created a whitelist that will be quickly passed though, preventing other rules
+from being applied. Good for the accidental screw up. I don't have a blacklist
+table because I use denyhosts.  </p>
+<div class="highlight"><pre><span></span>pfctl -t whitelist -T add 192.168.0.0/16
+</pre></div>
+
+
+<p>Cidr notation is also accepted in tables.</p>
+<h3>Traffic Normalization</h3>
+<p>Scrub guarantees that all traffic passed into the filter section is not fragmented. Packets
+that are fragmented are put into a buffer to wait until the rest of the packet arrives.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Scrubs packets for possible issues. All Trafic is reassembled. Might cause</span>
+<span class="c1"># issues for games and NFS</span>
+scrub in on <span class="nv">$ext_if</span> all fragment reassemble
+</pre></div>
+
+
+<p>Be cautious with scrub rules. They can cause issues with games and NFS traffic.
+To log a rules effect add "log" after the in or out keyword as such.</p>
+<div class="highlight"><pre><span></span>scrub in log on <span class="nv">$ext_if</span> all fragment reassemble
+</pre></div>
+
+
+<h3>Filtering</h3>
+<p>Not much crazy has changed here. I've added two new rules to allow icmp trafic and to
+quick pass from the whitelist table. I've also added a rule which drops all
+trafic with a destination address of 255.255.255.255. It's commented it out though,
+most of the broadcast traffic I was getting was from UPnP. Not allowing
+UPnP(udp 1900, tcp 5000) is easier.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Block all traffic by default</span>
+block all
+
+<span class="c1"># Ignore local,internal traffic</span>
+<span class="nb">set</span> skip on lo0
+
+<span class="c1"># Quick antispoof check for primary interface</span>
+antispoof log quick <span class="k">for</span> <span class="nv">$ext_if</span>
+
+<span class="c1"># Quick drop on broadcast traffic</span>
+<span class="c1">#block in quick on $ext_if from any to 255.255.255.255</span>
+
+<span class="c1"># Allow incoming and outgoing ICMP</span>
+pass inet proto icmp from any to any
+
+<span class="c1"># Allow in traffic from services macro</span>
+pass in quick from &lt;whitelist&gt; flags S/SA synproxy state
+pass in on <span class="nv">$ext_if</span> proto tcp to any port <span class="nv">$tcp_services</span>
+pass in on <span class="nv">$ext_if</span> proto udp to any port <span class="nv">$udp_services</span>
+
+<span class="c1"># Allow ALL outbound traffic</span>
+pass out on <span class="nv">$ext_if</span> proto tcp from any to any keep state
+pass out on <span class="nv">$ext_if</span> proto udp from any to any keep state
+</pre></div>
+
+
+<h2>Other Usefull Commands.</h2>
+<p>Lots of commands are available to do just about everything under the sun with pf.
+I've listed below some of the more useful commands I've found.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Realtime logging from pglog0 device</span>
+tcpdump -n -e -ttt -i pflog0
+<span class="c1"># realtime logging from pf log file</span>
+tcpdump -n -e -ttt -r /var/log/pflog
+
+<span class="c1"># parse ruleset for errors, does not load</span>
+pfctl -vnf /etc/pf.conf
+<span class="c1"># maintain state and reload config</span>
+pfctl -f /etc/pf.conf
+<span class="c1"># same thing as above, just easier to remember</span>
+service pf reload
+
+<span class="c1"># List loaded rules</span>
+pfctl -sr
+<span class="c1"># View state table</span>
+pfctl -ss
+<span class="c1"># List everything</span>
+pfctl -sa
+</pre></div>
+</article>
+<!--<a href="https://twitter.com/share" class="twitter-share-button"-->
+   <!--data-count="horizontal" data-via="ewhouse">Tweet</a><script-->
+   <!--type="text/javascript"-->
+   <!--src="https://platform.twitter.com/widgets.js"></script>-->
+
+<script>window.twttr = (function(d, s, id) {
+     var js, fjs = d.getElementsByTagName(s)[0],
+       t = window.twttr || {};
+     if (d.getElementById(id)) return t;
+     js = d.createElement(s);
+     js.id = id;
+     js.src = "https://platform.twitter.com/widgets.js";
+     fjs.parentNode.insertBefore(js, fjs);
+    
+     t._e = [];
+     t.ready = function(f) {
+       t._e.push(f);
+     };
+    
+     return t;
+   }(document, "script", "twitter-wjs"));</script>
+
+<a class="twitter-share-button"
+     href="https://twitter.com/intent/tweet"> Tweet</a>
+
+          <div class="footer">
+            <ul>
+                <li><a href="https://github.com/ehouse">Github</a></li>
+                <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+                <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+            </ul>
+            <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+            <p>&copy; Ethan House 2013 - 2016</p>
+          </div> <!-- #footer -->
+        </div> <!-- .column -->
+      </div> <!-- .row -->
+    </div> <!-- .container -->
+  </body>
+</html>

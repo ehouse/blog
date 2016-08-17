@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs -->
+    <title>Adventure Into PCBSD</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Tech and D&amp;D, what more could you want?">
+    <meta name="author" content="Ethan House">
+    <!-- Mobile Specific Metas  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/ehouse.css">
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/theme/images/favicon.png">
+  </head>
+  <body>
+    <!-- Primary Page Layout -->
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <div id="nav">
+            <ul>
+                <li><a href="/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+                <li><a href="/dd.html">D&amp;D</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+          </div> <!-- #nav -->
+          <div id="headerImage">
+            <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+          </div> <!-- #headerImage -->
+
+<article>
+  <h2><a href="../posts/adventure-into-pcbsd.html" rel="bookmark" title="Permalink to Adventure Into PCBSD">Adventure Into PCBSD</a></h2>
+  <p class="date">Posted on September 15, 2013 by Ethan House </p>
+  <p>While popping around the BSD community I keep hearing about PCBSD.
+Most people seem to detest it but some people like it. PCBSD calls itself a “...
+user friendly desktop Operating System based on FreeBSD.” I wasn't quite
+sure about the “user friendly” part but I am going to give it a shot.</p>
+<p>I wanted a backup of my SSD in the likely chance that I dislike/break it
+and want out. The solution came in the form of
+<a href="http://www.freebsd.org/cgi/man.cgi?query=dump&amp;sektion=8">dump</a> and
+<a href="http://www.freebsd.org/cgi/man.cgi?query=restore">restore</a>. Incremental
+backups of the file system, perfect. Had I known more when I setup the
+system I would've used ZFS which contains its own utility for
+incremental backups. I booted into single user mode and mounted the
+filesystem in read only mode.</p>
+<div class="highlight"><pre><span></span>newfs -U /dev/da0
+mount /dev/da0 /mnt/usb
+dump -C16 -b64 -0a -h0 -f /mnt/flashdrive/root.dump /dev/ada0
+</pre></div>
+
+
+<p>This took about 10 minutes and I was off installing PCBSD. My first
+impressions of the installer were “ohhhh... Pretty”. The entire process
+of installing is done within what looks like a KDE environment. While
+superfluous, it worked pretty well and I had the system setup in no
+time. I thought it was cool that you could pick from a list of window
+managers to come pre-installed on the system that included i3, my
+personal favorite. Installation was done and it was time to reboot and
+initiate first bootup which comes with it's own slew of setup steps.</p>
+<p>Nothing, it dropped into the bootup sequence and the screen went black.
+I reboot and tried again. Still nothing. Given no chance to boot in
+single user mode I didn't see many options. I re-installed the system
+this time choosing only defaults. First boot up and still a black
+screen. I searched in vain for any way to drop into a shell during the
+PCBSD install.</p>
+<p>I dropped into a FreeBSD live session and tried to mount the SSD. I
+futzed around with the boot settings trying to find a combo that would
+produce a bootable system. All I managed to do was mess up the boot
+sequence. Getting frustrated I decided to call it a night.</p>
+<p>I checked the wiki and saw that my laptop was not on the list of laptops
+compatible with PCBSD. I decided the next day that it wasn't worth the
+time or effort to get it booting correctly. Lazily I reinstalled FreeBSD
+and only installed the core package and setup nothing else, after all I
+just needed the partition table. After the installation finished I
+dropped into the live environment.</p>
+<div class="highlight"><pre><span></span>newfs -U /dev/ada0p2
+mount /dev/ada0p2 /media
+mount /dev/da0 /mnt
+mount /dev/da1 /tmp
+cd /media
+restore -rf /mnt/root.dump
+</pre></div>
+
+
+<p>The interesting step there is mounting the second flashdrive under tmp.
+One of the limitations I found with restore is it needs to be able to
+write to /tmp before it can do a backup. As I was in a read only livecd
+that posed a problem. The restore was done in a few short minutes. It
+was weird when Firefox popped up asking if I would like to reopen my
+tabs. Every thing worked a little too perfectly. We can't have that.</p>
+<p>Up next – How not to upgrade to FreeBSD 9.2</p>
+</article>
+<!--<a href="https://twitter.com/share" class="twitter-share-button"-->
+   <!--data-count="horizontal" data-via="ewhouse">Tweet</a><script-->
+   <!--type="text/javascript"-->
+   <!--src="https://platform.twitter.com/widgets.js"></script>-->
+
+<script>window.twttr = (function(d, s, id) {
+     var js, fjs = d.getElementsByTagName(s)[0],
+       t = window.twttr || {};
+     if (d.getElementById(id)) return t;
+     js = d.createElement(s);
+     js.id = id;
+     js.src = "https://platform.twitter.com/widgets.js";
+     fjs.parentNode.insertBefore(js, fjs);
+    
+     t._e = [];
+     t.ready = function(f) {
+       t._e.push(f);
+     };
+    
+     return t;
+   }(document, "script", "twitter-wjs"));</script>
+
+<a class="twitter-share-button"
+     href="https://twitter.com/intent/tweet"> Tweet</a>
+
+          <div class="footer">
+            <ul>
+                <li><a href="https://github.com/ehouse">Github</a></li>
+                <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+                <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+            </ul>
+            <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+            <p>&copy; Ethan House 2013 - 2016</p>
+          </div> <!-- #footer -->
+        </div> <!-- .column -->
+      </div> <!-- .row -->
+    </div> <!-- .container -->
+  </body>
+</html>

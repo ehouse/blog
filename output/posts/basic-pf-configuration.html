@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic Page Needs -->
+    <title>Basic PF Configuration</title>
+    <meta charset="utf-8" />
+    <meta name="description" content="Tech and D&amp;D, what more could you want?">
+    <meta name="author" content="Ethan House">
+    <!-- Mobile Specific Metas  -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/ehouse.css">
+    <link href="/theme/css/pygments.css" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/theme/images/favicon.png">
+  </head>
+  <body>
+    <!-- Primary Page Layout -->
+    <div class="container">
+      <div class="row">
+        <div class="column">
+          <div id="nav">
+            <ul>
+                <li><a href="/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+                <li><a href="/dd.html">D&amp;D</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+          </div> <!-- #nav -->
+          <div id="headerImage">
+            <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+          </div> <!-- #headerImage -->
+
+<article>
+  <h2><a href="../posts/basic-pf-configuration.html" rel="bookmark" title="Permalink to Basic PF Configuration">Basic PF Configuration</a></h2>
+  <p class="date">Posted on February 13, 2014 by Ethan House </p>
+  <p>After a brief mishap with partition tables and ZFS and FreeBSD are finally setup
+on my personal server. I needed something to act as a firewall and went with PF.
+I decided to base my setup off of security groups for Amazon EC2. All outbound
+traffic is allowed but inbound traffic must pass through a whitelist of
+services. To add another service just add the port name or the port number to
+the tcp_services list.</p>
+<p>This was what I came up with.</p>
+<div class="highlight"><pre><span></span><span class="cp">##</span><span class="c"># MACROS</span><span class="x"></span>
+<span class="err">#</span><span class="x"> TCP services to allow, either names from /etc/services or port numbers</span>
+<span class="x">tcp_services = &quot;</span><span class="err">{</span><span class="x">http, https, ssh, rpc, domain}&quot;</span>
+
+<span class="err">#</span><span class="x"> UDP Services to allow, either names from /etc/services or port numbers</span>
+<span class="x">udp_services = &quot;</span><span class="err">{</span><span class="x">domain}&quot;</span>
+
+<span class="err">#</span><span class="x"> Macro of the primary interface</span>
+<span class="x">ext_if=&quot;bce1&quot;</span>
+
+<span class="cp">##</span><span class="c"># Packet Filtering</span><span class="x"></span>
+<span class="err">#</span><span class="x"> Block all traffic by default</span>
+<span class="x">block all</span>
+
+<span class="err">#</span><span class="x"> Ignore lo0 interface for filtering</span>
+<span class="x">set skip on lo0</span>
+
+<span class="err">#</span><span class="x"> Allow IN traffic from white listed service macro</span>
+<span class="x">pass in on </span><span class="p">$</span><span class="nv">ext_if</span><span class="x"> proto tcp to any port </span><span class="p">$</span><span class="nv">tcp_services</span><span class="x"></span>
+<span class="x">pass in on </span><span class="p">$</span><span class="nv">ext_if</span><span class="x"> proto udp to any port </span><span class="p">$</span><span class="nv">udp_services</span><span class="x"></span>
+
+<span class="err">#</span><span class="x"> Allow ALL outbound traffic</span>
+<span class="x">pass out on </span><span class="p">$</span><span class="nv">ext_if</span><span class="x"> proto tcp from any to any keep state</span>
+<span class="x">pass out on </span><span class="p">$</span><span class="nv">ext_if</span><span class="x"> proto udp from any to any keep state</span>
+</pre></div>
+
+
+<p>To setup PF copy this config to <code>/etc/pf.conf</code>.</p>
+<p>Run the command <code>pfctl -ef /etc/pf.conf</code> to enable pf and load the comfig.</p>
+<p>The command <code>pfctl -d /etc/pf.conf</code> can be used to disable pf while debugging.</p>
+<p>Misc Commands:</p>
+<div class="highlight"><pre><span></span>pfctl -sr  # view loaded config
+pfctl -ss  # view established connections
+pfctl -vnf # parse ruleset for errors without loading it in
+</pre></div>
+</article>
+<!--<a href="https://twitter.com/share" class="twitter-share-button"-->
+   <!--data-count="horizontal" data-via="ewhouse">Tweet</a><script-->
+   <!--type="text/javascript"-->
+   <!--src="https://platform.twitter.com/widgets.js"></script>-->
+
+<script>window.twttr = (function(d, s, id) {
+     var js, fjs = d.getElementsByTagName(s)[0],
+       t = window.twttr || {};
+     if (d.getElementById(id)) return t;
+     js = d.createElement(s);
+     js.id = id;
+     js.src = "https://platform.twitter.com/widgets.js";
+     fjs.parentNode.insertBefore(js, fjs);
+    
+     t._e = [];
+     t.ready = function(f) {
+       t._e.push(f);
+     };
+    
+     return t;
+   }(document, "script", "twitter-wjs"));</script>
+
+<a class="twitter-share-button"
+     href="https://twitter.com/intent/tweet"> Tweet</a>
+
+          <div class="footer">
+            <ul>
+                <li><a href="https://github.com/ehouse">Github</a></li>
+                <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+                <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+            </ul>
+            <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+            <p>&copy; Ethan House 2013 - 2016</p>
+          </div> <!-- #footer -->
+        </div> <!-- .column -->
+      </div> <!-- .row -->
+    </div> <!-- .container -->
+  </body>
+</html>

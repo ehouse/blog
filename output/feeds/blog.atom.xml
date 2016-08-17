@@ -1,5 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>blog.ehouse.io</title><link href="https://blog-test.ehouse.io/" rel="alternate"></link><link href="https://blog-test.ehouse.io/feeds/blog.atom.xml" rel="self"></link><id>https://blog-test.ehouse.io/</id><updated>2016-03-11T00:00:00-05:00</updated><entry><title>Easy Server Naming Scheme</title><link href="https://blog-test.ehouse.io/easy-server-naming-scheme.html" rel="alternate"></link><updated>2016-03-11T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2016-03-11:easy-server-naming-scheme.html</id><summary type="html">&lt;p&gt;Coming up with names for servers or VM's can be pretty difficult. Often times
+<feed xmlns="http://www.w3.org/2005/Atom"><title>blog.ehouse.io</title><link href="https://blog-test.ehouse.io/" rel="alternate"></link><link href="https://blog-test.ehouse.io/feeds/blog.atom.xml" rel="self"></link><id>https://blog-test.ehouse.io/</id><updated>2016-03-27T00:00:00-04:00</updated><entry><title>ISTS Blue Team 4 Postmortem</title><link href="https://blog-test.ehouse.io/posts/ists-blue-team-4-postmortem.html" rel="alternate"></link><updated>2016-03-27T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2016-03-27:posts/ists-blue-team-4-postmortem.html</id><summary type="html">&lt;p&gt;This past weekend I participated in a hacking competition Information Secuirty
+Talent Search at RIT as a defending team. The goal was to attack other teams
+machines while keeping yours online.  While this is going on there are bonuses
+or injects being handed out that get’s you bonus points for completing various
+challenges. An example of an inject was to run and connect to a minecraft server
+on some other teams servers.&lt;/p&gt;
+&lt;p&gt;Unfortunately we didn’t win but our team did win the title of best defense which
+I hold as high as winning. My team knew going in that our hacking and offensive
+skills were lacking compared to the other teams but we gave it our all.&lt;/p&gt;
+&lt;h2&gt;Our Strategy&lt;/h2&gt;
+&lt;h3&gt;Commands that Helped&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;w&lt;/code&gt; - Shows who’s logged in.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ss&lt;/code&gt; OR &lt;code&gt;netstat -alutpn&lt;/code&gt; OR &lt;code&gt;sockstat -4&lt;/code&gt; - Shows active network connections to
+the outside world.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;routes&lt;/code&gt; - Used to display current routes the system is using. Once or twice I
+found a route to another team.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Files and Configs to Watch&lt;/h3&gt;
+&lt;p&gt;There were quiet a few files that had absolutely no reason to be changing through
+the competition so we either made them non-writeable to watched them like a
+hawk.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;.bashrc&lt;/code&gt; AND &lt;code&gt;.vimrc&lt;/code&gt; - quite a few teams hid commands in these files that
+would run when a user did something. Very nasty. Ensure these are simple and
+fully understood especially on the root user.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;my.cnf&lt;/code&gt; OR &lt;code&gt;postgresql.conf&lt;/code&gt; - Only allow connections from IP's you trust.
+Double check your account privileges as well, there is zero reason an admin
+account should ever connect over the network. Restricting account access won't
+stop a SQL injection but it will save your machine and your other databases. &lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;PURGE EVERYTHING&lt;/h3&gt;
+&lt;p&gt;This turned out to be the winning strategy in the long run in terms of keeping
+us running. If we saw something that seemed out of place or was not needed we
+tar’ed it up and plopped it in /root for safe keeping. All services were
+stripped to their bare essentials and left in what I would call a barely working
+state but was just enough to fulfill the score board checks. This included
+disabling ssh and sudo which removed most of the attack vectors on the machines.
+Dirty but REALLY effective. &lt;/p&gt;
+&lt;h3&gt;Firewalls&lt;/h3&gt;
+&lt;p&gt;Many of the attacks or Injects involved opening processes on ports and running
+commands through them. The direct counter to this of course is to lock the whole
+system down to only the ports it needs. It’s impossible to open a million netcat
+processes on every port if binding is blocked. The email server only needed pop3
+and smtp so everything was blocked except for port 25 and 110.&lt;/p&gt;
+&lt;h3&gt;Condense and Minimize&lt;/h3&gt;
+&lt;p&gt;Stick to what you need in the long run. We did not have the control we liked on
+our cloud infrastructure so we moved as much as we could to our local esxi
+server. Our build server ran a alpine linux instance with ssh and our AD server
+was just DNS. The scoring engine only cared that they were available, not that
+they were usable. We actually had people on red and white team complain to us at
+how difficult it was to get at these boxes and that feels like a victory to me.&lt;/p&gt;
+&lt;h3&gt;Pitfalls to Avoid&lt;/h3&gt;
+&lt;p&gt;Our HTTP server had to host a buggy and security nightmare php app which also
+ran our banking terminal. For the first half of the competition I just hosted
+the default apache page which was enough to score. The problem arose when we
+actually had to use the banking app to pay our power bill to keep our servers
+running. The red team had XSS’ed it through a specially crafted tweet that would
+drain your balance every time you access the page. I mistakenly ignored large
+aspects of the banking aspects of the game as well as the app. I should have
+gone through it at the beginning and removed the XSS vectors.&lt;/p&gt;
+&lt;h2&gt;What We Loved&lt;/h2&gt;
+&lt;p&gt;I thought the infrastructure of the competition was well put together. Rarely
+were there any obvious lag or hiccups with with the VM's or networking. The only
+issues we had with hardware was when our VM server had a hard drive failure
+which was hardly the fault of anyone running the competition. &lt;/p&gt;
+&lt;h2&gt;What We Want Changed Next Year&lt;/h2&gt;
+&lt;p&gt;As I mentioned the game had a concept of money which was awarded by completing
+challenges. My issues come from what it can be spent on, specifically three of
+them. Restore a system to it’s original snapshot, Power Off and Console Access.
+All of our VM’s were shutdown with zero way for us to turn it back on for about
+an hour. We had ALL of our VM’s reset THREE times. FINALLY, a team payed to have
+console access to our VM’s where they turned them off and booted into single
+user mode.&lt;/p&gt;
+&lt;p&gt;There was no way to block this, no way to defend against this and once it’s been
+paid for no one to mitigate. Three times I had to rebuild our VM’s as if we were
+at the beginning of the competition all while every team destroyed our VM’s with
+the known vulnerabilities. By the time we got half of the VM’s in a safe state
+the other half are owned beyond repair and had to be reset. We ended up draining
+our entire bank account just getting machines turned back on or reset to remove
+the forced backdoors. This is precisely why we moved all of our services we
+could to the local ESXI cluster as we couldn’t trust the cloud infrastructure.
+Due to routing issues we were only able to put half of the VM’s we needed to
+host behind the local ESXI and we continue to fight off resets and bought
+backdoors for the entire competition. Frustrating for us and embarrassing for
+the other teams that had to buy their through our servers defenses.&lt;/p&gt;</summary></entry><entry><title>Easy Server Naming Scheme</title><link href="https://blog-test.ehouse.io/posts/easy-server-naming-scheme.html" rel="alternate"></link><updated>2016-03-11T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2016-03-11:posts/easy-server-naming-scheme.html</id><summary type="html">&lt;p&gt;Coming up with names for servers or VM's can be pretty difficult. Often times
 names become obsolete or don't describe the server in a way that's meaningful.
 The best system is one where every machine has a unique name as it's A record
 and all of the service specific names become CNames. This allows the server to
@@ -16,7 +101,7 @@ worked out great both times. I would heavily recommend it whenever possible.&lt;
 The pool of words comes from Oren Tirosh's mnemonic encoding project. The order
 of the names will be random so it's up to you to verify the names aren't already
 in use for your environment. You can can randomly generate list of hostnames at
-&lt;a href="https://hosts.ehouse.io"&gt;hosts.ehouse.io&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Vim for Blog Writing</title><link href="https://blog-test.ehouse.io/vim-for-blog-writing.html" rel="alternate"></link><updated>2015-11-19T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-11-19:vim-for-blog-writing.html</id><summary type="html">&lt;p&gt;For a while I was using IDE's like Atom or Sublime to write my blog posts but I
+&lt;a href="https://hosts.ehouse.io"&gt;hosts.ehouse.io&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Vim for Blog Writing</title><link href="https://blog-test.ehouse.io/posts/vim-for-blog-writing.html" rel="alternate"></link><updated>2015-11-19T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-11-19:posts/vim-for-blog-writing.html</id><summary type="html">&lt;p&gt;For a while I was using IDE's like Atom or Sublime to write my blog posts but I
 found it annoying to switch between the terminal and the IDE constantly. The
 two things I needed were working syntax highlighting and spell checking so a full
 IDE was overkill. &lt;/p&gt;
@@ -35,7 +120,7 @@ type &lt;code&gt;:set spell&lt;/code&gt; and to disabled it &lt;code&gt;:set nos
 &lt;p&gt;Assuming there are actually misspellings in your article words will get
 highlighted red. The &lt;code&gt;[s&lt;/code&gt; and &lt;code&gt;]s&lt;/code&gt; commands are used to jump backwards and
 forwards to the next misspelled words. Use &lt;code&gt;z=&lt;/code&gt; to correct the word under the
-cursor and use &lt;code&gt;zg&lt;/code&gt; to add the word to the local dictionary. &lt;/p&gt;</summary></entry><entry><title>mu4e as a email client</title><link href="https://blog-test.ehouse.io/mu4e-as-a-email-client.html" rel="alternate"></link><updated>2015-07-03T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-07-03:mu4e-as-a-email-client.html</id><summary type="html">&lt;p&gt;A coworker told me about this awesome life changing mail client called mu4e so of course I had to try it. Mu is an incredibly powerful mail indexer built on top of xapian. It can index and search through 20,000+ emails in fractions of a second. Its searching language is easy to use and incredibly powerful. From the distance I loved everything that mu4e was and could do.&lt;/p&gt;
+cursor and use &lt;code&gt;zg&lt;/code&gt; to add the word to the local dictionary. &lt;/p&gt;</summary></entry><entry><title>mu4e as a email client</title><link href="https://blog-test.ehouse.io/posts/mu4e-as-a-email-client.html" rel="alternate"></link><updated>2015-07-03T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-07-03:posts/mu4e-as-a-email-client.html</id><summary type="html">&lt;p&gt;A coworker told me about this awesome life changing mail client called mu4e so of course I had to try it. Mu is an incredibly powerful mail indexer built on top of xapian. It can index and search through 20,000+ emails in fractions of a second. Its searching language is easy to use and incredibly powerful. From the distance I loved everything that mu4e was and could do.&lt;/p&gt;
 &lt;p&gt;I ended up sticking with thunderbird for my personal email however. My issue with it is that it was too life changing. Too much lift for just an improved email experience. My biggest issue was its lack of imap support. Why, might you ask, does a mail client not support imap. The answer is they chose not to. Instead they read from a Maildir which you need to create yourself with offlineimap or a similar tool. Polling is not a supported feature so you need a cronjob to run every few minutes. Not great if you are having a minute by minute discussion or aren't checking your email every few minutes. Not to mention the need to sync not just the headers but the full email body because you can't lazily download them as you read emails. The results of this is that it can take HOURS for the initial sync to finish.&lt;/p&gt;
 &lt;p&gt;My second gripe is that it is of course entirely emacs based. I'm too ingrained with modal text editing to change for just my email client. Most machines I work on don't even come with emacs installed and changing that might get me a stern talking to. There is a way to tie it into mutt but it doesn't look to be nearly as mature as mu4e. &lt;/p&gt;
 &lt;p&gt;My final thoughts are that mu4e is amazing if you are willing to learn emacs. It's well worth it for the power you get back. I didn't realize how awful email search was until I got familiar with mu. Too intrusive for me however.&lt;/p&gt;
@@ -77,7 +162,7 @@ cursor and use &lt;code&gt;zg&lt;/code&gt; to add the word to the local dictiona
 &lt;span class="c1"&gt;; Disable threading and don&amp;#39;t ask to quit.&lt;/span&gt;
 &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-headers-show-threads&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="k"&gt;setq&lt;/span&gt; &lt;span class="nv"&gt;mu4e-confirm-quit&lt;/span&gt; &lt;span class="no"&gt;nil&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Basic Sieve Usage and Configuration</title><link href="https://blog-test.ehouse.io/basic-sieve-usage-and-configuration.html" rel="alternate"></link><updated>2015-06-22T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-06-22:basic-sieve-usage-and-configuration.html</id><summary type="html">&lt;h3&gt;Setting up Sieve Access&lt;/h3&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Basic Sieve Usage and Configuration</title><link href="https://blog-test.ehouse.io/posts/basic-sieve-usage-and-configuration.html" rel="alternate"></link><updated>2015-06-22T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-06-22:posts/basic-sieve-usage-and-configuration.html</id><summary type="html">&lt;h3&gt;Setting up Sieve Access&lt;/h3&gt;
 &lt;p&gt;Sieve is a server side protocol for filtering mail. The benefit over sorting
 mail client side is that rules will be applied regardless of your MUA. Sieve
 scripts can be edited locally or remotely using the managesieve service. I am
@@ -151,7 +236,7 @@ stop;
 list of options for sieve or
 &lt;a href="http://wiki2.dovecot.org/Pigeonhole/Sieve/Examples"&gt;here&lt;/a&gt; for some great sieve
 examples. It's a little weird at first but in no time you'll be writing new
-filters rules without looking at the docs.&lt;/p&gt;</summary></entry><entry><title>Temporary Mail Queue Server</title><link href="https://blog-test.ehouse.io/temporary-mail-queue-server.html" rel="alternate"></link><updated>2015-06-21T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-06-21:temporary-mail-queue-server.html</id><summary type="html">&lt;p&gt;I needed to stand up a temporary queue server to store mail while our primary
+filters rules without looking at the docs.&lt;/p&gt;</summary></entry><entry><title>Temporary Mail Queue Server</title><link href="https://blog-test.ehouse.io/posts/temporary-mail-queue-server.html" rel="alternate"></link><updated>2015-06-21T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2015-06-21:posts/temporary-mail-queue-server.html</id><summary type="html">&lt;p&gt;I needed to stand up a temporary queue server to store mail while our primary
 file server was out of commission. This was the config I created to do just
 that. I went with OpenSMTPD because it was by far the easiest choice when
 standing up a new SMTP server. I had the whole thing running in less then an
@@ -177,7 +262,7 @@ backup MX record for this mail host and turn everything on. Watch the mail queue
 to make sure mail is being relayed.&lt;/p&gt;
 &lt;p&gt;Due to the lack of physical access and being students it's hard to prevent
 issues like this. It's a bad solution to a worse problem but it solved our
-looming problem of losing mail.&lt;/p&gt;</summary></entry><entry><title>Wrath of the Lich Witch Part 1</title><link href="https://blog-test.ehouse.io/wrath-of-the-lich-witch-part-1.html" rel="alternate"></link><updated>2014-11-24T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-11-24:wrath-of-the-lich-witch-part-1.html</id><summary type="html">&lt;h3&gt;Side Quest&lt;/h3&gt;
+looming problem of losing mail.&lt;/p&gt;</summary></entry><entry><title>Wrath of the Lich Witch Part 1</title><link href="https://blog-test.ehouse.io/posts/wrath-of-the-lich-witch-part-1.html" rel="alternate"></link><updated>2014-11-24T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-11-24:posts/wrath-of-the-lich-witch-part-1.html</id><summary type="html">&lt;h3&gt;Side Quest&lt;/h3&gt;
 &lt;p&gt;Everyone was absent, so I decided to run a one-off I've been cooking in my head. It went better than expected.&lt;/p&gt;
 &lt;h4&gt;Players&lt;/h4&gt;
 &lt;ul&gt;
@@ -304,7 +389,7 @@ unison. "Well then it would only make sense to team up and deal with this Lich
 together," she said rather enthusiastically considering her recent encounter
 with goblins.&lt;/p&gt;
 &lt;p&gt;And with that the newly formed party was off.&lt;/p&gt;
-&lt;p&gt;To be continued in &lt;a href="/wrath-of-the-lich-witch-part-2.html"&gt;Part 2&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Basic SMTP Email Server</title><link href="https://blog-test.ehouse.io/basic-smtp-email-server.html" rel="alternate"></link><updated>2014-11-05T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-11-05:basic-smtp-email-server.html</id><summary type="html">&lt;p&gt;Running your own mail server can seem intimidating at first but once the
+&lt;p&gt;To be continued in &lt;a href="/wrath-of-the-lich-witch-part-2.html"&gt;Part 2&lt;/a&gt;.&lt;/p&gt;</summary></entry><entry><title>Basic SMTP Email Server</title><link href="https://blog-test.ehouse.io/posts/basic-smtp-email-server.html" rel="alternate"></link><updated>2014-11-05T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-11-05:posts/basic-smtp-email-server.html</id><summary type="html">&lt;p&gt;Running your own mail server can seem intimidating at first but once the
 different layers are broken down it becomes much easier to tackle. There are
 three main parts of a mail stack, the mta, mda, and mua. The Mail Transfer Agent
 (MTA) is what handles the sending and receiving of emails. This is the smtp
@@ -424,7 +509,7 @@ won't be going over it.&lt;/p&gt;
 &lt;h4&gt;Next up&lt;/h4&gt;
 &lt;p&gt;In the next section I will be going over the MDA which will be dovecot which
 will allow you to use thunderbird. I will also cover amavisd and spamassassin to
-deal with the inevitable spam you'll receive.&lt;/p&gt;</summary></entry><entry><title>Automating Ports with Poudriere</title><link href="https://blog-test.ehouse.io/automating-ports-with-poudriere.html" rel="alternate"></link><updated>2014-09-24T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-09-24:automating-ports-with-poudriere.html</id><summary type="html">&lt;p&gt;While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
+deal with the inevitable spam you'll receive.&lt;/p&gt;</summary></entry><entry><title>Automating Ports with Poudriere</title><link href="https://blog-test.ehouse.io/posts/automating-ports-with-poudriere.html" rel="alternate"></link><updated>2014-09-24T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-09-24:posts/automating-ports-with-poudriere.html</id><summary type="html">&lt;p&gt;While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
 custom build flags. While ports is pretty decent in itself it is a royal pain to automate. New to FreeBSD 10, poudriere
 allows ports to be built in the background with no human interaction post setup. Setup is quick and easy to maintain.&lt;/p&gt;
 &lt;h3&gt;Setup&lt;/h3&gt;
@@ -533,7 +618,7 @@ named the jail template.&lt;/p&gt;
 
 &lt;p&gt;There you go. A fully functional automated ports building process. Probably took no more then 30 minutes.&lt;/p&gt;
 &lt;p&gt;I used &lt;a href="http://www.bsdnow.tv/tutorials/poudriere"&gt;BSDNow&lt;/a&gt; for reference when writing this. Check out their stuff, it's
-pretty great.&lt;/p&gt;</summary></entry><entry><title>Advanced PF Usage</title><link href="https://blog-test.ehouse.io/advanced-pf-usage.html" rel="alternate"></link><updated>2014-06-20T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-06-20:advanced-pf-usage.html</id><summary type="html">&lt;p&gt;Since my last PF post I've made some changes to my pf.conf file. I've broken the
+pretty great.&lt;/p&gt;</summary></entry><entry><title>Advanced PF Usage</title><link href="https://blog-test.ehouse.io/posts/advanced-pf-usage.html" rel="alternate"></link><updated>2014-06-20T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-06-20:posts/advanced-pf-usage.html</id><summary type="html">&lt;p&gt;Since my last PF post I've made some changes to my pf.conf file. I've broken the
 config into its own separate section and displayed them below with some
 explanation. All together the config is organized and easy to maintain, which is
 always good.&lt;/p&gt;
@@ -638,7 +723,7 @@ pfctl -sr
 pfctl -ss
 &lt;span class="c1"&gt;# List everything&lt;/span&gt;
 pfctl -sa
-&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>OpenBSD and LibreSSL</title><link href="https://blog-test.ehouse.io/openbsd-and-libressl.html" rel="alternate"></link><updated>2014-04-26T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-04-26:openbsd-and-libressl.html</id><summary type="html">&lt;p&gt;I've always been impressed by the OpenBSD project. The developers do what is
+&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>OpenBSD and LibreSSL</title><link href="https://blog-test.ehouse.io/posts/openbsd-and-libressl.html" rel="alternate"></link><updated>2014-04-26T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-04-26:posts/openbsd-and-libressl.html</id><summary type="html">&lt;p&gt;I've always been impressed by the OpenBSD project. The developers do what is
 right, not what is popular or cool. This philosophy has built an operating
 system that is truly impressive while still maintaining optimal functionality.
 So when I heard the OpenBSD folks were forking the OpenSSL project I was
@@ -654,7 +739,7 @@ my laptop. My initial reaction was something between shock and bewilderment.
 Everything was working out of the box. I had zero issues with suspend/resume,
 CPU scaling, wireless, or even the media keys.&lt;/p&gt;
 &lt;p&gt;I highly recommend giving it a shot, you might be as surprised as I was in terms
-of hardware support and quality.&lt;/p&gt;</summary></entry><entry><title>Basic PF Configuration</title><link href="https://blog-test.ehouse.io/basic-pf-configuration.html" rel="alternate"></link><updated>2014-02-13T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-02-13:basic-pf-configuration.html</id><summary type="html">&lt;p&gt;After a brief mishap with partition tables and ZFS and FreeBSD are finally setup
+of hardware support and quality.&lt;/p&gt;</summary></entry><entry><title>Basic PF Configuration</title><link href="https://blog-test.ehouse.io/posts/basic-pf-configuration.html" rel="alternate"></link><updated>2014-02-13T00:00:00-05:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2014-02-13:posts/basic-pf-configuration.html</id><summary type="html">&lt;p&gt;After a brief mishap with partition tables and ZFS and FreeBSD are finally setup
 on my personal server. I needed something to act as a firewall and went with PF.
 I decided to base my setup off of security groups for Amazon EC2. All outbound
 traffic is allowed but inbound traffic must pass through a whitelist of
@@ -695,7 +780,7 @@ the tcp_services list.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;pfctl -sr  # view loaded config
 pfctl -ss  # view established connections
 pfctl -vnf # parse ruleset for errors without loading it in
-&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Switching to Pelican</title><link href="https://blog-test.ehouse.io/switching-to-pelican.html" rel="alternate"></link><updated>2013-10-30T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-10-30:switching-to-pelican.html</id><summary type="html">&lt;p&gt;I have become increasingly frustrated with octopress and its complexities. The
+&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Switching to Pelican</title><link href="https://blog-test.ehouse.io/posts/switching-to-pelican.html" rel="alternate"></link><updated>2013-10-30T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-10-30:posts/switching-to-pelican.html</id><summary type="html">&lt;p&gt;I have become increasingly frustrated with octopress and its complexities. The
 tools I was using to maintain the blog were unnecessarily complicated for what
 they were doing. I was constantly looking for fixes for problems I didn't
 understand. Official documentation I found was just plain wrong at times. So I
@@ -704,7 +789,7 @@ decided it was time for something that made a little more sense for me.&lt;/p&gt
 couple of oddities I have noticed which I am still trying to work out. Weird CSS
 rules that apply to page elements that don't make sense. It is also much easier
 to setup. Now if only I could figure out how images and plugins worked but that
-will have to wait till the morning.&lt;/p&gt;</summary></entry><entry><title>Why I use Cloudflare</title><link href="https://blog-test.ehouse.io/why-i-use-cloudflare.html" rel="alternate"></link><updated>2013-09-19T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-19:why-i-use-cloudflare.html</id><summary type="html">&lt;p&gt;A &lt;a href="http://worrbase.com/"&gt;friend&lt;/a&gt; of mine recently showed me a service called
+will have to wait till the morning.&lt;/p&gt;</summary></entry><entry><title>Why I use Cloudflare</title><link href="https://blog-test.ehouse.io/posts/why-i-use-cloudflare.html" rel="alternate"></link><updated>2013-09-19T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-19:posts/why-i-use-cloudflare.html</id><summary type="html">&lt;p&gt;A &lt;a href="http://worrbase.com/"&gt;friend&lt;/a&gt; of mine recently showed me a service called
 &lt;a href="https://www.cloudflare.com/index.html"&gt;CloudFlare&lt;/a&gt; and I'm surprised it's not
 more commonly used than it is. It is especially good for small sites driven by a
 single server. They offer services like website caching and auto minification of
@@ -721,7 +806,7 @@ my server is in Rochester I get good latency because it is mirrored in San Jose.
 This is normally a feature only available to companies with dozens of data
 centers spread across the country.&lt;/p&gt;
 &lt;p&gt;These are some pretty impressive features for a free service. I would recommend
-this to just about every webmaster out there.&lt;/p&gt;</summary></entry><entry><title>OpenBSD X11 Setup</title><link href="https://blog-test.ehouse.io/openbsd-x11-setup.html" rel="alternate"></link><updated>2013-09-17T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-17:openbsd-x11-setup.html</id><summary type="html">&lt;p&gt;This is my personal setup for my openbsd laptop. I use i3 as my window manager
+this to just about every webmaster out there.&lt;/p&gt;</summary></entry><entry><title>OpenBSD X11 Setup</title><link href="https://blog-test.ehouse.io/posts/openbsd-x11-setup.html" rel="alternate"></link><updated>2013-09-17T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-17:posts/openbsd-x11-setup.html</id><summary type="html">&lt;p&gt;This is my personal setup for my openbsd laptop. I use i3 as my window manager
 and i3lock as a screen lock daemon.&lt;/p&gt;
 &lt;h3&gt;xinitrc&lt;/h3&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xmodmap -e &lt;span class="s1"&gt;&amp;#39;remove Lock = Caps\_Lock&amp;#39;&lt;/span&gt;
@@ -783,7 +868,7 @@ very easy to configure. It doesn't put much load on the system when
 polling which is always a plus. Laptop battery life is precious.&lt;/p&gt;
 &lt;p&gt;That is my X11 setup in a nutshell. If anyone is interested in how I got
 something to work don't hesitate and throw me an email. I always enjoy a
-good technical conversation.&lt;/p&gt;</summary></entry><entry><title>Adventure Into PCBSD</title><link href="https://blog-test.ehouse.io/adventure-into-pcbsd.html" rel="alternate"></link><updated>2013-09-15T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-15:adventure-into-pcbsd.html</id><summary type="html">&lt;p&gt;While popping around the BSD community I keep hearing about PCBSD.
+good technical conversation.&lt;/p&gt;</summary></entry><entry><title>Adventure Into PCBSD</title><link href="https://blog-test.ehouse.io/posts/adventure-into-pcbsd.html" rel="alternate"></link><updated>2013-09-15T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-09-15:posts/adventure-into-pcbsd.html</id><summary type="html">&lt;p&gt;While popping around the BSD community I keep hearing about PCBSD.
 Most people seem to detest it but some people like it. PCBSD calls itself a “...
 user friendly desktop Operating System based on FreeBSD.” I wasn't quite
 sure about the “user friendly” part but I am going to give it a shot.&lt;/p&gt;
@@ -840,7 +925,7 @@ write to /tmp before it can do a backup. As I was in a read only livecd
 that posed a problem. The restore was done in a few short minutes. It
 was weird when Firefox popped up asking if I would like to reopen my
 tabs. Every thing worked a little too perfectly. We can't have that.&lt;/p&gt;
-&lt;p&gt;Up next – How not to upgrade to FreeBSD 9.2&lt;/p&gt;</summary></entry><entry><title>First time using FreeBSD</title><link href="https://blog-test.ehouse.io/first-time-using-freebsd.html" rel="alternate"></link><updated>2013-08-30T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-08-30:first-time-using-freebsd.html</id><summary type="html">&lt;p&gt;As a long time Slackware user I have always been interested in how BSD style
+&lt;p&gt;Up next – How not to upgrade to FreeBSD 9.2&lt;/p&gt;</summary></entry><entry><title>First time using FreeBSD</title><link href="https://blog-test.ehouse.io/posts/first-time-using-freebsd.html" rel="alternate"></link><updated>2013-08-30T00:00:00-04:00</updated><author><name>Ethan House</name></author><id>tag:blog-test.ehouse.io,2013-08-30:posts/first-time-using-freebsd.html</id><summary type="html">&lt;p&gt;As a long time Slackware user I have always been interested in how BSD style
 operating systems. It's been two years and I still try to keep to KISS as much
 as possible when writing software or maintaining systems. In preparation of
 switching my personal server to FreeBSD I wanted to run my ThinkPad X230 with

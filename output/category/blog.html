@@ -11,7 +11,7 @@
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="/theme/css/normalize.css">
     <link rel="stylesheet" type="text/css" href="/theme/css/skeleton.css">
-    <link rel="stylesheet" type="text/css" href="/theme/css/local.css">
+    <link rel="stylesheet" type="text/css" href="/theme/css/ehouse.css">
     <link href="/theme/css/pygments.css" rel="stylesheet">
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/theme/images/favicon.png">
@@ -20,145 +20,220 @@
     <!-- Primary Page Layout -->
     <div class="container">
       <div class="row">
-	<div class="column">
-	  <div id="nav">
-	    <ul>
-              <li><a href="/">Blog</a></li>
-              <li><a href="/pages/projects.html">Projects</a></li>
-              <li><a href="/pages/dd.html">D&amp;D</a></li>
-              <li><a href="/pages/about.html">About</a></li>
-	    </ul>
-	  </div> <!-- #nav -->
-	  <div id="headerImage">
-	    <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
-	  </div> <!-- #headerImage -->
-        <h1>Featured Article</h1>
+        <div class="column">
+          <div id="nav">
+            <ul>
+                <li><a href="/">Blog</a></li>
+                <li><a href="/projects.html">Projects</a></li>
+                <li><a href="/dd.html">D&amp;D</a></li>
+                <li><a href="/about.html">About</a></li>
+            </ul>
+          </div> <!-- #nav -->
+          <div id="headerImage">
+            <img alt="Train Bridge at Swarthmore College crossing Crum Creek" src="/theme/images/wide_bridge.jpg" />
+          </div> <!-- #headerImage -->
+        <!--<h1>Featured Article</h1>-->
         <article>
             <header>
-                <h2 class="featured"><a href="../easy-server-naming-scheme.html">Easy Server Naming Scheme</a></h2>
+                <h2><a href="../posts/ists-blue-team-4-postmortem.html" rel="bookmark" title="Permalink to ISTS Blue Team 4 Postmortem">ISTS Blue Team 4 Postmortem</a></h2>
             </header>
-            <p class="date">Posted on March 11, 2016 by Ethan House</p>
-            <p>Coming up with names for servers or VM's can be pretty difficult. Often times
-names become obsolete or don't describe the server in a way that's meaningful.
-The best system is one where every machine has a unique name as it's A record
-and all of the service specific names become CNames. This allows the server to
-host many services without causing naming confusion or obsolete hostnames if a
-primary service is changed.</p>
-<p>The article written by
-<a href="http://mnx.io/blog/a-proper-server-naming-scheme/">mnx.io</a> describes in great
-detail how to pull this off. I've found it works best in smallish environments
-of less then 100 servers. I've helped implement this scheme in two places and it
-worked out great both times. I would heavily recommend it whenever possible.</p>
-<h3>Unique Names</h3>
-<p>I've set up a server endpoint that will retrieve a list of unique names from
-<a href="https://web.archive.org/web/20090918202746/http://tothink.com/mnemonic/wordlist.html">here</a>.
-The pool of words comes from Oren Tirosh's mnemonic encoding project. The order
-of the names will be random so it's up to you to verify the names aren't already
-in use for your environment. You can can randomly generate list of hostnames at
-<a href="https://hosts.ehouse.io">hosts.ehouse.io</a>.</p>
+            <p class="date">Posted on March 27, 2016 by Ethan House</p>
+            <!--<p>My thoughts on RIT's ISTS competition.</p>-->
+            <!--<a class="readmore" href="../posts/ists-blue-team-4-postmortem.html">read more</a>-->
+            <p>This past weekend I participated in a hacking competition Information Secuirty
+Talent Search at RIT as a defending team. The goal was to attack other teams
+machines while keeping yours online.  While this is going on there are bonuses
+or injects being handed out that get’s you bonus points for completing various
+challenges. An example of an inject was to run and connect to a minecraft server
+on some other teams servers.</p>
+<p>Unfortunately we didn’t win but our team did win the title of best defense which
+I hold as high as winning. My team knew going in that our hacking and offensive
+skills were lacking compared to the other teams but we gave it our all.</p>
+<h2>Our Strategy</h2>
+<h3>Commands that Helped</h3>
+<ul>
+<li><code>w</code> - Shows who’s logged in.</li>
+<li><code>ss</code> OR <code>netstat -alutpn</code> OR <code>sockstat -4</code> - Shows active network connections to
+the outside world.</li>
+<li><code>routes</code> - Used to display current routes the system is using. Once or twice I
+found a route to another team.</li>
+</ul>
+<h3>Files and Configs to Watch</h3>
+<p>There were quiet a few files that had absolutely no reason to be changing through
+the competition so we either made them non-writeable to watched them like a
+hawk.</p>
+<ul>
+<li><code>.bashrc</code> AND <code>.vimrc</code> - quite a few teams hid commands in these files that
+would run when a user did something. Very nasty. Ensure these are simple and
+fully understood especially on the root user.</li>
+<li><code>my.cnf</code> OR <code>postgresql.conf</code> - Only allow connections from IP's you trust.
+Double check your account privileges as well, there is zero reason an admin
+account should ever connect over the network. Restricting account access won't
+stop a SQL injection but it will save your machine and your other databases. </li>
+</ul>
+<h3>PURGE EVERYTHING</h3>
+<p>This turned out to be the winning strategy in the long run in terms of keeping
+us running. If we saw something that seemed out of place or was not needed we
+tar’ed it up and plopped it in /root for safe keeping. All services were
+stripped to their bare essentials and left in what I would call a barely working
+state but was just enough to fulfill the score board checks. This included
+disabling ssh and sudo which removed most of the attack vectors on the machines.
+Dirty but REALLY effective. </p>
+<h3>Firewalls</h3>
+<p>Many of the attacks or Injects involved opening processes on ports and running
+commands through them. The direct counter to this of course is to lock the whole
+system down to only the ports it needs. It’s impossible to open a million netcat
+processes on every port if binding is blocked. The email server only needed pop3
+and smtp so everything was blocked except for port 25 and 110.</p>
+<h3>Condense and Minimize</h3>
+<p>Stick to what you need in the long run. We did not have the control we liked on
+our cloud infrastructure so we moved as much as we could to our local esxi
+server. Our build server ran a alpine linux instance with ssh and our AD server
+was just DNS. The scoring engine only cared that they were available, not that
+they were usable. We actually had people on red and white team complain to us at
+how difficult it was to get at these boxes and that feels like a victory to me.</p>
+<h3>Pitfalls to Avoid</h3>
+<p>Our HTTP server had to host a buggy and security nightmare php app which also
+ran our banking terminal. For the first half of the competition I just hosted
+the default apache page which was enough to score. The problem arose when we
+actually had to use the banking app to pay our power bill to keep our servers
+running. The red team had XSS’ed it through a specially crafted tweet that would
+drain your balance every time you access the page. I mistakenly ignored large
+aspects of the banking aspects of the game as well as the app. I should have
+gone through it at the beginning and removed the XSS vectors.</p>
+<h2>What We Loved</h2>
+<p>I thought the infrastructure of the competition was well put together. Rarely
+were there any obvious lag or hiccups with with the VM's or networking. The only
+issues we had with hardware was when our VM server had a hard drive failure
+which was hardly the fault of anyone running the competition. </p>
+<h2>What We Want Changed Next Year</h2>
+<p>As I mentioned the game had a concept of money which was awarded by completing
+challenges. My issues come from what it can be spent on, specifically three of
+them. Restore a system to it’s original snapshot, Power Off and Console Access.
+All of our VM’s were shutdown with zero way for us to turn it back on for about
+an hour. We had ALL of our VM’s reset THREE times. FINALLY, a team payed to have
+console access to our VM’s where they turned them off and booted into single
+user mode.</p>
+<p>There was no way to block this, no way to defend against this and once it’s been
+paid for no one to mitigate. Three times I had to rebuild our VM’s as if we were
+at the beginning of the competition all while every team destroyed our VM’s with
+the known vulnerabilities. By the time we got half of the VM’s in a safe state
+the other half are owned beyond repair and had to be reset. We ended up draining
+our entire bank account just getting machines turned back on or reset to remove
+the forced backdoors. This is precisely why we moved all of our services we
+could to the local ESXI cluster as we couldn’t trust the cloud infrastructure.
+Due to routing issues we were only able to put half of the VM’s we needed to
+host behind the local ESXI and we continue to fight off resets and bought
+backdoors for the entire competition. Frustrating for us and embarrassing for
+the other teams that had to buy their through our servers defenses.</p>
         </article>
             <h1>Other Articles</h1>
         <article>
         <header>
-          <h2 class="featured"><a href="../vim-for-blog-writing.html" rel="bookmark" title="Permalink to Vim for Blog Writing">Vim for Blog Writing</a></h2>
+          <h3 class="blog-roll"><a href="../posts/easy-server-naming-scheme.html" rel="bookmark" title="Permalink to Easy Server Naming Scheme">Easy Server Naming Scheme</a></h3>
+        </header>
+        <p class="date">Posted on March 11, 2016 by Ethan House</p>
+        <!--<p>Coming up with names for servers or VM's can be pretty difficult. Often times
+names become obsolete or don't describe the server in a way that's meaningful.
+The best system is one where every machine has a unique name as it's A record
+and all of ...</p>-->
+        <!--<a class="readmore" href="../posts/easy-server-naming-scheme.html">read more</a>-->
+        </article>
+        <article>
+        <header>
+          <h3 class="blog-roll"><a href="../posts/vim-for-blog-writing.html" rel="bookmark" title="Permalink to Vim for Blog Writing">Vim for Blog Writing</a></h3>
         </header>
         <p class="date">Posted on November 19, 2015 by Ethan House</p>
-        <p>Quite a lot of issues I had writing blog posts in Vim were solved with a few config edits.</p>
-        <a class="readmore" href="../vim-for-blog-writing.html">read more</a>
+        <!--<p>Quite a lot of issues I had writing blog posts in Vim were solved with a few config edits.</p>-->
+        <!--<a class="readmore" href="../posts/vim-for-blog-writing.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../mu4e-as-a-email-client.html" rel="bookmark" title="Permalink to mu4e as a email client">mu4e as a email client</a></h2>
+          <h3 class="blog-roll"><a href="../posts/mu4e-as-a-email-client.html" rel="bookmark" title="Permalink to mu4e as a email client">mu4e as a email client</a></h3>
         </header>
         <p class="date">Posted on July 03, 2015 by Ethan House</p>
-        <p>A coworker told me about this awesome life changing mail client called mu4e so of course I had to try it. Mu is an incredibly powerful mail indexer built on top of xapian. It can index and search through 20,000+ emails in fractions of a second. Its searching language ...</p>
-        <a class="readmore" href="../mu4e-as-a-email-client.html">read more</a>
+        <!--<p>A coworker told me about this awesome life changing mail client called mu4e so of course I had to try it. Mu is an incredibly powerful mail indexer built on top of xapian. It can index and search through 20,000+ emails in fractions of a second. Its searching language ...</p>-->
+        <!--<a class="readmore" href="../posts/mu4e-as-a-email-client.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../basic-sieve-usage-and-configuration.html" rel="bookmark" title="Permalink to Basic Sieve Usage and Configuration">Basic Sieve Usage and Configuration</a></h2>
+          <h3 class="blog-roll"><a href="../posts/basic-sieve-usage-and-configuration.html" rel="bookmark" title="Permalink to Basic Sieve Usage and Configuration">Basic Sieve Usage and Configuration</a></h3>
         </header>
         <p class="date">Posted on June 22, 2015 by Ethan House</p>
-        <p>A quick guide to setting up and using sieve for Dovecot 2.x email servers.</p>
-        <a class="readmore" href="../basic-sieve-usage-and-configuration.html">read more</a>
+        <!--<p>A quick guide to setting up and using sieve for Dovecot 2.x email servers.</p>-->
+        <!--<a class="readmore" href="../posts/basic-sieve-usage-and-configuration.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../temporary-mail-queue-server.html" rel="bookmark" title="Permalink to Temporary Mail Queue Server">Temporary Mail Queue Server</a></h2>
+          <h3 class="blog-roll"><a href="../posts/temporary-mail-queue-server.html" rel="bookmark" title="Permalink to Temporary Mail Queue Server">Temporary Mail Queue Server</a></h3>
         </header>
         <p class="date">Posted on June 21, 2015 by Ethan House</p>
-        <p>I needed to stand up a temporary queue server to store mail while our primary
+        <!--<p>I needed to stand up a temporary queue server to store mail while our primary
 file server was out of commission. This was the config I created to do just
 that. I went with OpenSMTPD because it was by far the easiest choice when
-standing up a new SMTP server ...</p>
-        <a class="readmore" href="../temporary-mail-queue-server.html">read more</a>
+standing up a new SMTP server ...</p>-->
+        <!--<a class="readmore" href="../posts/temporary-mail-queue-server.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../wrath-of-the-lich-witch-part-1.html" rel="bookmark" title="Permalink to Wrath of the Lich Witch Part 1">Wrath of the Lich Witch Part 1</a></h2>
+          <h3 class="blog-roll"><a href="../posts/wrath-of-the-lich-witch-part-1.html" rel="bookmark" title="Permalink to Wrath of the Lich Witch Part 1">Wrath of the Lich Witch Part 1</a></h3>
         </header>
         <p class="date">Posted on November 24, 2014 by Ethan House</p>
-        <p>A side quest I ran when we were down a few players turned into one of the more exciting game's I've GM'ed.</p>
-        <a class="readmore" href="../wrath-of-the-lich-witch-part-1.html">read more</a>
+        <!--<p>A side quest I ran when we were down a few players turned into one of the more exciting game's I've GM'ed.</p>-->
+        <!--<a class="readmore" href="../posts/wrath-of-the-lich-witch-part-1.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../basic-smtp-email-server.html" rel="bookmark" title="Permalink to Basic SMTP Email Server">Basic SMTP Email Server</a></h2>
+          <h3 class="blog-roll"><a href="../posts/basic-smtp-email-server.html" rel="bookmark" title="Permalink to Basic SMTP Email Server">Basic SMTP Email Server</a></h3>
         </header>
         <p class="date">Posted on November 05, 2014 by Ethan House</p>
-        <p>Running your own mail server can seem intimidating at first but once the
+        <!--<p>Running your own mail server can seem intimidating at first but once the
 different layers are broken down it becomes much easier to tackle. There are
 three main parts of a mail stack, the mta, mda, and mua. The Mail Transfer Agent
-(MTA) is what handles the sending and receiving ...</p>
-        <a class="readmore" href="../basic-smtp-email-server.html">read more</a>
+(MTA) is what handles the sending and receiving ...</p>-->
+        <!--<a class="readmore" href="../posts/basic-smtp-email-server.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../automating-ports-with-poudriere.html" rel="bookmark" title="Permalink to Automating Ports with Poudriere">Automating Ports with Poudriere</a></h2>
+          <h3 class="blog-roll"><a href="../posts/automating-ports-with-poudriere.html" rel="bookmark" title="Permalink to Automating Ports with Poudriere">Automating Ports with Poudriere</a></h3>
         </header>
         <p class="date">Posted on September 24, 2014 by Ethan House</p>
-        <p>While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
+        <!--<p>While pkg-ng is good for simple FreeBSD setups it rarely fits all of my needs. Eventually you'll need a package with
 custom build flags. While ports is pretty decent in itself it is a royal pain to automate. New to FreeBSD 10, poudriere
-allows ports to be built in ...</p>
-        <a class="readmore" href="../automating-ports-with-poudriere.html">read more</a>
+allows ports to be built in ...</p>-->
+        <!--<a class="readmore" href="../posts/automating-ports-with-poudriere.html">read more</a>-->
         </article>
-        <hr />
         <article>
         <header>
-          <h2 class="featured"><a href="../advanced-pf-usage.html" rel="bookmark" title="Permalink to Advanced PF Usage">Advanced PF Usage</a></h2>
+          <h3 class="blog-roll"><a href="../posts/advanced-pf-usage.html" rel="bookmark" title="Permalink to Advanced PF Usage">Advanced PF Usage</a></h3>
         </header>
         <p class="date">Posted on June 20, 2014 by Ethan House</p>
-        <p>Since my last PF post I've made some changes to my pf.conf file. I've broken the
+        <!--<p>Since my last PF post I've made some changes to my pf.conf file. I've broken the
 config into its own separate section and displayed them below with some
 explanation. All together the config is organized and easy to maintain, which is
 always good.</p>
 <h3>Macros</h3>
-<p>Macros can be ...</p>
-        <a class="readmore" href="../advanced-pf-usage.html">read more</a>
+<p>Macros can be ...</p>-->
+        <!--<a class="readmore" href="../posts/advanced-pf-usage.html">read more</a>-->
         </article>
-        <hr />
-        <article>
-        <header>
-          <h2 class="featured"><a href="../openbsd-and-libressl.html" rel="bookmark" title="Permalink to OpenBSD and LibreSSL">OpenBSD and LibreSSL</a></h2>
-        </header>
-        <p class="date">Posted on April 26, 2014 by Ethan House</p>
-        <p>I've always been impressed by the OpenBSD project. The developers do what is
-right, not what is popular or cool. This philosophy has built an operating
-system that is truly impressive while still maintaining optimal functionality.
-So when I heard the OpenBSD folks were forking the OpenSSL project I ...</p>
-        <a class="readmore" href="../openbsd-and-libressl.html">read more</a>
-        </article>
-        <hr />
-<p class="paginator">
-    Page 1 / 2
-        <a href="../category/blog2.html">Next &rarr;</a>
-</p>
+<!--<p style="text-align: center;">-->
+    <!---->
+    <!--Page 1 / 2-->
+    <!---->
+        <!--<a href="../category/blog2.html">Next &rarr;</a>-->
+    <!---->
+<!--</p>-->
+
+   <ul class="pageNum">
+      <li>
+      </li>
+   <li>
+   <p style="text-align: center">Page 1 / 2</p>
+   </li>
+   <li>
+      <a href="../category/blog2.html">Next &rarr;</a>
+      </li>
+   </ul>
 
 <!-- <div class="pagination"> -->
 <!--   <ul> -->
@@ -178,16 +253,16 @@ So when I heard the OpenBSD folks were forking the OpenSSL project I ...</p>
 
 <!--   </ul> -->
 <!-- </div> -->
-	  <div id="footer">
-	    <ul>
-              <li><a href="https://github.com/ehouse">Github</a></li>
-              <li><a href="https://keybase.io/ehouse">Keybase</a></li>
-              <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
-	    </ul>
-	    <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
-	    <p>&copy; Ethan House 2013 - 2016</p>
-	  </div> <!-- #footer -->
-	</div> <!-- .column -->
+          <div class="footer">
+            <ul>
+                <li><a href="https://github.com/ehouse">Github</a></li>
+                <li><a href="https://keybase.io/ehouse">Keybase</a></li>
+                <li><a href="https://twitter.com/ewhhouse">Twitter</a></li>
+            </ul>
+            <p>Page generated by <a href="http://getpelican.com/">Pelican</a>. Theme Available on my <a href="https://github.com/ehouse/blog">Github</a>.</p>
+            <p>&copy; Ethan House 2013 - 2016</p>
+          </div> <!-- #footer -->
+        </div> <!-- .column -->
       </div> <!-- .row -->
     </div> <!-- .container -->
   </body>
